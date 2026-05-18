@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>[solidcore] End of Shift Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy:       #1557b0;
+    --navy-dark:  #0d47a1;
+    --navy-mid:   #ffffff;
+    --navy-light: #e8f0fe;
+    --blue:       #1557b0;
+    --blue-dim:   #0d47a1;
+    --blue-pale:  #e8f0fe;
+    --white:      #ffffff;
+    --off-white:  #f8f9fa;
+    --text-muted: #5f6368;
+    --border:     #dadce0;
+    --success:    #137333;
+    --alert:      #c5221f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f0f4ff;
+    color: #202124;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* HEADER */
+  .header {
+    background: #ffffff;
+    border-bottom: 1px solid #dadce0;
+    padding: 28px 40px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .header-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .header-subtitle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #202124;
+    text-align: center;
+  }
+  .header-subtitle .region-tag {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: #1557b0;
+    display: block;
+    margin-top: 3px;
+  }
+
+  .progress-bar-wrap {
+    background: #e8eaed;
+    height: 3px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: #1557b0;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  /* FORM */
+  .form-wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 20px 0;
+  }
+
+  /* SECTION HEADERS */
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #1557b0;
+    padding: 32px 0 12px;
+    border-top: 2px solid #e8eaed;
+    margin-top: 32px;
+  }
+  .section-label:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+  /* FIELDS */
+  .field { margin-bottom: 20px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+
+  label {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #3c4043;
+    margin-bottom: 8px;
+  }
+  label .req { color: var(--blue); margin-left: 3px; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="date"],
+  input[type="time"],
+  select,
+  textarea {
+    width: 100%;
+    background: #ffffff;
+    border: 1.5px solid #dadce0;
+    border-radius: 6px;
+    color: #202124 !important;
+    -webkit-text-fill-color: #202124 !important;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    padding: 12px 14px;
+    transition: border-color 0.15s, background 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #1557b0;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(21,87,176,0.15);
+  }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.5; color: #202124 !important; }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231557b0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    background-color: #ffffff;
+  }
+  select option { background: #ffffff; color: #202124; }
+
+  /* STUDIO SELECTOR */
+  .studio-selector-wrap {
+    background: #1557b0;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+  }
+  .studio-selector-wrap label {
+    color: rgba(255,255,255,0.85);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    margin-bottom: 10px;
+  }
+  .studio-selector-wrap select {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 2px solid rgba(255,255,255,0.3);
+    background-color: rgba(255,255,255,0.12);
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    border-radius: 8px;
+    padding: 14px 40px 14px 16px;
+    background-image: none;
+  }
+  .studio-selector-wrap select:focus {
+    border-color: rgba(255,255,255,0.8);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+    background-color: rgba(255,255,255,0.18);
+  }
+  .studio-selector-wrap select option {
+    background: #1557b0;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  /* STEPPER */
+  .stepper {
+    display: flex;
+    align-items: center;
+    background: var(--navy-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    width: 100%;
+  }
+  .stepper button {
+    background: var(--navy-light);
+    border: none;
+    color: var(--blue);
+    font-size: 22px;
+    font-weight: 700;
+    width: 40px;
+    height: 44px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.1s;
+    flex-shrink: 0;
+  }
+  .stepper button:hover { background: var(--blue); color: var(--white); }
+  .stepper .count {
+    flex: 1;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    color: #eef0ff;
+    user-select: none;
+  }
+
+  /* METRICS GRID */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .metric-card {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+  }
+  .metric-card .metric-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #5f6368;
+    display: block;
+    line-height: 1.3;
+  }
+
+  /* CHECKLIST */
+  .checklist { display: flex; flex-direction: column; gap: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 13px 16px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
+  }
+  .check-item:hover { border-color: var(--blue); }
+  .check-item.checked { border-color: var(--blue); background: #1a2150; }
+  .check-item input[type="checkbox"] { display: none; }
+  .check-box {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .check-item.checked .check-box { background: var(--blue); border-color: var(--blue); }
+  .check-box svg { display: none; }
+  .check-item.checked .check-box svg { display: block; }
+  .check-text { font-size: 14px; font-weight: 500; color: #3c4043; line-height: 1.3; }
+  .check-item.checked .check-text { color: var(--white); }
+
+  /* RADIO PILLS */
+  .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radio-pill { cursor: pointer; }
+  .radio-pill input { display: none; }
+  .radio-pill span {
+    display: block;
+    padding: 9px 22px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #3c4043;
+    transition: all 0.15s;
+    background: #ffffff;
+  }
+  .radio-pill input:checked + span { background: var(--blue); border-color: var(--blue); color: var(--white); }
+  .radio-pill:hover span { border-color: var(--blue); color: var(--blue); }
+
+  /* SUBMIT */
+  .submit-wrap { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--border); }
+  .submit-btn {
+    background: #1557b0;
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 16px 48px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    width: 100%;
+  }
+  .submit-btn:hover { background: var(--blue-dim); }
+  .submit-btn:active { transform: scale(0.99); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .autosave-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--success);
+    opacity: 0;
+    transition: opacity 0.4s;
+    margin-top: 10px;
+  }
+  .autosave-badge.visible { opacity: 1; }
+  .autosave-dot {
+    width: 6px; height: 6px;
+    background: var(--success);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* CORE VALUES BAR */
+  .core-bar {
+    background: #1557b0;
+    padding: 8px 40px;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+  }
+  .core-bar-inner {
+    max-width: 760px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .core-word {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 15px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white);
+    opacity: 0.9;
+  }
+  .core-dot {
+    color: var(--white);
+    opacity: 0.4;
+    font-size: 8px;
+  }
+
+  /* SUCCESS MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.visible { display: flex; }
+  .modal-box {
+    background: #ffffff;
+    border: 1px solid #1557b0;
+    border-radius: 12px;
+    padding: 48px 40px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    animation: modalIn 0.3s ease;
+  }
+  @keyframes modalIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal-icon {
+    width: 56px; height: 56px;
+    background: #1557b0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .modal-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #202124;
+    margin-bottom: 12px;
+  }
+  .modal-msg {
+    font-size: 15px;
+    color: #5f6368;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .modal-close {
+    background: #1557b0;
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 12px 32px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .modal-close:hover { background: var(--blue-dim); }
+
+  /* CELEBRATION BURST */
+  @keyframes burstUp {
+    0%   { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-80px) scale(1.4); opacity: 0; }
+  }
+
+  /* ENERGY CHECK-IN */
+  .energy-options { display: flex; flex-direction: column; gap: 10px; }
+  .energy-btn {
+    background: #ffffff;
+    border: 2px solid #dadce0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.15s;
+    border-left-width: 4px;
+  }
+  .energy-btn:hover { background: #f0f4ff; transform: translateX(4px); }
+  .energy-btn.selected { background: #e8f0fe; transform: translateX(4px); }
+  .energy-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .energy-emoji { font-size: 20px; }
+  .energy-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .energy-desc { font-size: 12px; color: #5f6368; margin-left: auto; font-style: italic; }
+  .e1 { border-left-color: #ff6b6b; } .e1.selected, .e1:hover { border-color: #ff6b6b; } .e1 .energy-dot { background: #ff6b6b; } .e1 .energy-text { color: #ff6b6b; }
+  .e2 { border-left-color: #ffa94d; } .e2.selected, .e2:hover { border-color: #ffa94d; } .e2 .energy-dot { background: #ffa94d; } .e2 .energy-text { color: #ffa94d; }
+  .e3 { border-left-color: #ffe066; } .e3.selected, .e3:hover { border-color: #ffe066; } .e3 .energy-dot { background: #ffe066; } .e3 .energy-text { color: #ffe066; }
+  .e4 { border-left-color: #69db7c; } .e4.selected, .e4:hover { border-color: #69db7c; } .e4 .energy-dot { background: #69db7c; } .e4 .energy-text { color: #69db7c; }
+  .e5 { border-left-color: #6b8fff; } .e5.selected, .e5:hover { border-color: #6b8fff; } .e5 .energy-dot { background: #6b8fff; } .e5 .energy-text { color: #6b8fff; }
+
+  /* NOTIFY CHECKBOXES */
+  .notify-section {
+    background: #f8f9fa;
+    border: 1.5px solid #dadce0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 12px;
+  }
+  .notify-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #8fabff;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .notify-list { display: flex; flex-direction: column; gap: 8px; }
+  .notify-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #ffffff;
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
+  }
+  .notify-item:hover { border-color: #1557b0; }
+  .notify-item.checked { border-color: #1557b0; background: #e8f0fe; }
+  .notify-item input[type="checkbox"] { display: none; }
+  .notify-box {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 3px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .notify-item.checked .notify-box { background: var(--blue); border-color: var(--blue); }
+  .notify-box svg { display: none; }
+  .notify-item.checked .notify-box svg { display: block; }
+  .notify-name { font-weight: 600; font-size: 14px; color: #202124; }
+  .notify-email { font-size: 12px; color: #5f6368; margin-left: auto; }
+  .notify-item.locked { opacity: 0.6; cursor: not-allowed; }
+  .notify-item.locked .notify-box { background: var(--blue); border-color: var(--blue); }
+  .notify-hint { font-size: 11px; color: #c5221f; font-weight: 600; letter-spacing: 0.03em; display: block; margin-top: 2px; margin-bottom: 12px; text-transform: uppercase; }
+  .notify-item.locked .notify-box svg { display: block; }
+  .poc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #1557b0;
+    text-decoration: none;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    padding: 8px 14px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .poc-link:hover { border-color: #1557b0; background: #e8f0fe; }
+
+  input::placeholder, textarea::placeholder { color: #9aa0a6; }
+  .axle-sub { padding-left: 24px; border-left: 3px solid #1557b0; margin-left: 16px; margin-bottom: 8px; }
+  .sub-item { margin-bottom: 6px; border-color: #e8f0fe; background: #f8faff; }
+  .axle-toggle-hint { font-size: 11px; color: #1557b0; font-weight: 600; margin-left: 8px; opacity: 0.7; }
+
+  .hint {
+    font-size: 12px;
+    color: #5f6368;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* Studio required error */
+  .studio-error {
+    display: none;
+    color: #c5221f;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+    letter-spacing: 0.05em;
+  }
+  .studio-error.visible { display: block; }
+</style>
+</head>
+<body>
+
+<div class="core-bar">
+  <div class="core-bar-inner">
+    <span class="core-word">Connect</span>
+    <span class="core-dot">●</span>
+    <span class="core-word">Open</span>
+    <span class="core-dot">●</span>
+    <span class="core-word">Recognize</span>
+    <span class="core-dot">●</span>
+    <span class="core-word">Educate</span>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-subtitle">
+        [solidcore] &nbsp;·&nbsp; BK/CT End of Shift Report
+      </div>
+    </div>
+    <div class="autosave-badge" id="autosaveBadge"><span class="autosave-dot"></span> Draft saved</div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+</header>
+
+<form class="form-wrap" id="shiftForm" novalidate>
+
+  <!-- STUDIO SELECTOR -->
+  <div class="studio-selector-wrap">
+    <label for="studio_select">Select Your Studio <span class="req" style="color:rgba(255,255,255,0.7);">*</span></label>
+    <select id="studio_select" name="studio" required onchange="onStudioChange(this.value)">
+      <option value="">— Select studio —</option>
+      <option value="LIC">LIC</option>
+      <option value="Williamsburg">Williamsburg</option>
+      <option value="DUMBO">DUMBO</option>
+      <option value="DTBK">DTBK</option>
+      <option value="Darien">Darien</option>
+      <option value="West Hartford">West Hartford</option>
+      <option value="Westport">Westport</option>
+      <option value="Scarsdale">Scarsdale</option>
+    </select>
+    <div class="studio-error" id="studioError">⚠️ Please select your studio before submitting.</div>
+  </div>
+
+  <!-- QUICK LINKS -->
+  <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
+    <a href="https://docs.google.com/spreadsheets/d/1uvVXrRNcsX0E-ZE9VZDJ6P_n-AjPus1TTiXySQ-YFpU/edit?gid=1439431177#gid=1439431177" target="_blank" style="flex:1;min-width:140px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#ffffff;color:#1557b0;border:2px solid #1557b0;padding:11px 16px;border-radius:8px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">📋 Visitor's Guide</a>
+    <a href="https://docs.google.com/spreadsheets/d/1uvVXrRNcsX0E-ZE9VZDJ6P_n-AjPus1TTiXySQ-YFpU/edit?gid=937215114#gid=937215114" target="_blank" style="flex:1;min-width:140px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#ffffff;color:#1557b0;border:2px solid #1557b0;padding:11px 16px;border-radius:8px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">📞 Point of Contact</a>
+    <a href="https://docs.google.com/spreadsheets/d/1UH8LiMF0RvrJTTWayHnyLNMsHvLpTJ_NKXgOlgQWDVo" target="_blank" style="flex:1;min-width:140px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#ffffff;color:#1557b0;border:2px solid #1557b0;padding:11px 16px;border-radius:8px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">📊 View Past Shift Reports</a>
+    <a href="https://notebooklm.google.com/notebook/7500918c-2c23-4c26-9a48-b48313e6993b" target="_blank" style="flex:1;min-width:140px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#1557b0;color:#ffffff;border:2px solid #1557b0;padding:11px 16px;border-radius:8px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">🧑‍💻 Shift Buddy</a>
+  </div>
+  <p style="font-size:11px;color:#5f6368;font-style:italic;margin-top:-16px;margin-bottom:24px;">💡 <strong>Shift Buddy:</strong> Must be logged into the studio inbox to access.</p>
+
+  <div class="section-label">Shift Info</div>
+  <div class="field-row">
+    <div class="field">
+      <label>Name <span class="req">*</span></label>
+      <input type="text" name="name" placeholder="Your name" required />
+    </div>
+    <div class="field">
+      <label>Email <span class="req">*</span></label>
+      <input type="email" name="email" placeholder="your@email.com" required />
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Date <span class="req">*</span></label>
+      <input type="date" name="date" required />
+    </div>
+    <div class="field">
+      <label>Shift Time <span class="req">*</span></label>
+      <select name="shift_time" required>
+        <option value="">Select shift</option>
+        <option>Opening (AM)</option>
+        <option>Mid</option>
+        <option>Closing (PM)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="section-label">Shift Goal</div>
+  <div class="field">
+    <label>Goal for this shift <span class="req">*</span></label>
+    <textarea name="next_shift_goal" id="shiftGoalTextarea" placeholder="Be specific — what will you focus on?" required></textarea>
+    <p class="hint" id="goalHint" style="margin-top:8px;"></p>
+  </div>
+
+  <div class="section-label">Shift Checklist — Required Before End of Shift</div>
+  <p style="font-size:12px;color:#5f6368;margin:-8px 0 16px;font-style:italic;">Please only check what you were able to complete this shift.</p>
+  <div class="checklist" id="checklist">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div class="check-item" onclick="toggleCheck(this)" style="flex:1;margin-bottom:0;">
+        <input type="checkbox" name="checklist" value="brand_standards"/>
+        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="check-text">Brand Standards — Restock alarm reset, studio restocked every 3 hours, iPad checklist completed</span>
+      </div>
+      <a href="https://drive.google.com/file/d/1iKVEEwHOMLZrUTFjQpnol8AjPeK1Vbih/view?usp=sharing" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📋 Checklist</a>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" name="checklist" value="stop_drop_checkin"/>
+      <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="check-text">STOP, DROP, CHECK-IN — Please stand up for every check-in (get waivers signed)</span>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" name="checklist" value="inbox"/>
+      <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="check-text">Studio inbox cleared &amp; responded to</span>
+    </div>
+    <!-- AXLE expandable -->
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="check-item axle-parent" onclick="toggleAxle(this)" style="flex:1;margin-bottom:0;">
+        <input type="checkbox" name="checklist" value="axle" id="axle_main"/>
+        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="check-text">AXLE <span class="axle-toggle-hint" id="axleHint">▾ tap to expand</span></span>
+      </div>
+      <a href="https://portal.axl3.io/login.php" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">AXLE Portal</a>
+    </div>
+    <div class="axle-sub" id="axleSub" style="display:none;">
+      <div class="check-item sub-item" onclick="toggleCheck(this)">
+        <input type="checkbox" name="axle_voicemail" value="voicemails_cleared"/>
+        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="check-text">Voicemails cleared</span>
+      </div>
+      <div class="check-item sub-item" onclick="toggleCheck(this)">
+        <input type="checkbox" name="axle_callbacks" value="clients_called_back"/>
+        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="check-text">Clients called back / emailed</span>
+      </div>
+      <div class="check-item sub-item" onclick="toggleCheck(this)">
+        <input type="checkbox" name="axle_texts" value="non_sales_texts"/>
+        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="check-text">Non-Sales Team texts addressed</span>
+      </div>
+      <div class="check-item sub-item" onclick="toggleCheck(this)">
+        <input type="checkbox" name="axle_first_class" value="first_class_bucket"/>
+        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="check-text">"First Class Tomorrow" bucket cleared</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="check-item" onclick="toggleCheck(this)" style="flex:1;margin-bottom:0;">
+        <input type="checkbox" name="checklist" value="unpaid_class"/>
+        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="check-text">Unpaid class tomorrow</span>
+      </div>
+      <a id="unpaidTrackerLink" href="https://drive.google.com/drive/folders/1THgn7AQZvH14rVbHlxOqjnmx72FD6cPD" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📋 Unpaid Tracker</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="check-item" onclick="toggleCheck(this)" style="flex:1;margin-bottom:0;">
+        <input type="checkbox" name="checklist" value="nab_outreach"/>
+        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="check-text">Negative account balance outreach</span>
+      </div>
+      <a id="nabTrackerLink" href="https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📊 NAB Tracker</a>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" name="checklist" value="milestones"/>
+      <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="check-text">Milestone boards completed & pre-made for early milestones tomorrow</span>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" name="checklist" value="supply_order"/>
+      <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="check-text">Studio supply order — unpack &amp; put away (arrives first week of the month)</span>
+    </div>
+  </div>
+
+  <div class="field" style="margin-top:20px;">
+    <label>Notes for Next Core Crew <span class="req">*</span></label>
+    <textarea name="next_cc_notes" placeholder="What didn't get done this shift? What should the next crew prioritize? e.g. NAB outreach not completed, supply order still needs to be put away..." required></textarea>
+  </div>
+
+  <div class="section-label">Sales Metrics</div>
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <span class="metric-label">Membership Sales</span>
+      <div class="stepper">
+        <button type="button" onclick="stepDown('membership_sales')">−</button>
+        <div class="count" id="membership_sales_display">0</div>
+        <button type="button" onclick="stepUp('membership_sales', this)">+</button>
+      </div>
+      <input type="hidden" name="membership_sales" id="membership_sales" value="0"/>
+    </div>
+    <div class="metric-card">
+      <span class="metric-label">New Client Special Sales</span>
+      <div class="stepper">
+        <button type="button" onclick="stepDown('nc_specials')">−</button>
+        <div class="count" id="nc_specials_display">0</div>
+        <button type="button" onclick="stepUp('nc_specials', this)">+</button>
+      </div>
+      <input type="hidden" name="nc_specials" id="nc_specials" value="0"/>
+    </div>
+  </div>
+
+  <div class="field" style="margin-top:20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <label style="margin-bottom:0;">Sales Notes</label>
+      <a href="https://www.appsheet.com/start/2d3cbf3a-af41-4f23-92ed-def9dd6f251a?platform=desktop#appName=SPIFsubmission-451227836-25-10-10&vss=H4sIAAAAAAAAA62PQUvEMBCF_4rMOQVbW6q5ygpFdhEqXoyH2WYCwTZZmqm6lPx3E1cRPC4e5w3fx3srvFl67xmHV5DP6-91T0eQsCp4PB5IgVRw6x3PflQgFOxwOoX9Q3d30S_7yYZgvVMQIb6IHw1TALmeZZH_0kWA1eTYGktzVmZBUn3j6Z3hFPxBIQqYFsb9SF8rMmpD5zba8tbrdPO8kACe0QUcOCGdTpr6ygzNZY0FltVNUVctFVibskBdts11pVvTEMSY7MYPSyD9lCaePy03-jig06dOBsdA8RNPvdkI0gEAAA==&view=SPIF%20Submission" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;">⚡ SPIF Submission</a>
+    </div>
+    <textarea name="sales_notes" placeholder="Any context around your sales this shift — conversations started, objections, follow up opportunities..."></textarea>
+  </div>
+  <div class="field">
+    <label>Late Cancel Exceptions (LCEs)</label>
+    <textarea name="bookings_lces" placeholder="Document any LCEs given this shift. Include the client name, reason, and make sure to update the client account in MBO to keep track."></textarea>
+  </div>
+
+  <div class="section-label">Community Building</div>
+  <div class="field">
+    <label>Standout Conversations / Community Moments <span class="req">*</span></label>
+    <textarea name="community_notes" placeholder="Share any great connections, member milestones, or community-building moments this shift..." required></textarea>
+  </div>
+
+  <div class="section-label">Client & Facilities Issues</div>
+  <p style="font-size:12px;color:#5f6368;margin:-8px 0 16px;font-style:italic;">Anything that requires HCCM follow-up should go in this section.</p>
+  <div class="field">
+    <label>Any client issues? <span class="req">*</span></label>
+    <div class="radio-group">
+      <label class="radio-pill"><input type="radio" name="client_issues" value="Yes" required/><span>Yes</span></label>
+      <label class="radio-pill"><input type="radio" name="client_issues" value="No"/><span>No</span></label>
+    </div>
+  </div>
+  <div class="field" id="client_issues_detail" style="display:none;">
+    <label>Client Issue Details</label>
+    <textarea name="client_issues_notes" placeholder="Describe the issue."></textarea>
+  </div>
+  <div class="field" id="client_action_taken" style="display:none;">
+    <label>Action Taken</label>
+    <textarea name="client_action_taken" placeholder="What did you do? e.g. Called client, issued refund, notified manager, sent follow up email..."></textarea>
+  </div>
+
+  <div class="field">
+    <label>Any facilities issues? <span class="req">*</span></label>
+    <div class="radio-group">
+      <label class="radio-pill"><input type="radio" name="facilities_issues" value="Yes" required/><span>Yes</span></label>
+      <label class="radio-pill"><input type="radio" name="facilities_issues" value="No"/><span>No</span></label>
+    </div>
+  </div>
+  <div class="field" id="facilities_issues_detail" style="display:none;">
+    <label>Facilities Issue Details</label>
+    <textarea name="facilities_issues_notes" placeholder="Describe the issue."></textarea>
+  </div>
+  <div class="field" id="facilities_action_taken" style="display:none;">
+    <label>Action Taken</label>
+    <textarea name="facilities_action_taken" placeholder="What did you do? e.g. Called facilities, submitted work order, notified manager, cordoned off area..."></textarea>
+  </div>
+
+  <div class="field" id="shared_notify" style="display:none;">
+    <div class="notify-section">
+      <span class="notify-title">📣 Who should be notified?</span>
+      <span class="notify-hint" id="notifyHint">Only select Inger or Anastasiia if HCCM is OOO</span>
+      <div class="notify-list" id="notifyList">
+        <!-- Populated dynamically based on studio selection -->
+        <div class="notify-item locked">
+          <input type="checkbox" name="notify_issue" value="juan.zapata@solidcore.co" checked disabled/>
+          <div class="notify-box"><svg width="10" height="8" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="notify-name">Studio Manager</span>
+          <span class="notify-email" id="managerEmailDisplay">—</span>
+        </div>
+      </div>
+      <a class="poc-link" href="https://docs.google.com/spreadsheets/d/1uvVXrRNcsX0E-ZE9VZDJ6P_n-AjPus1TTiXySQ-YFpU/edit?gid=937215114#gid=937215114" target="_blank">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View POC Sheet — if above leaders are OOO
+      </a>
+    </div>
+  </div>
+
+  <div class="field" id="facilities_media" style="display:none;">
+    <label>Photos / Videos of Facilities Issue</label>
+    <p style="font-size:13px;color:#5f6368;line-height:1.6;background:#f8f9fa;border:1px solid #dadce0;border-radius:6px;padding:14px 16px;">📸 Please text via WhatsApp or email any photos or videos directly to your studio manager or point of contact so they can submit a Fexa report.</p>
+  </div>
+
+  <div class="section-label">Shift Goals — Did You Achieve It?</div>
+  <div class="field">
+    <label>Did you achieve your goal for this shift? <span class="req">*</span></label>
+    <textarea name="goal_achieved" placeholder="Yes — or explain what happened..." required></textarea>
+  </div>
+
+
+  <div class="section-label">Coach Support</div>
+  <div class="field">
+    <label>How supported did you feel by coaches pre &amp; post class? <span class="req">*</span></label>
+    <div style="background:#ffffff;border:1.5px solid #dadce0;border-radius:8px;padding:24px 20px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#c5221f;">Not Supported</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:28px;color:#1557b0;" id="coachSupportDisplay">—</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#137333;">Fully Supported</span>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:space-between;">
+        <button type="button" onclick="selectCoachSupport(1)"  id="csBtn1"  style="flex:1;height:44px;border:2px solid #dadce0;border-radius:6px;background:#ffffff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#5f6368;cursor:pointer;transition:all 0.15s;">1</button>
+        <button type="button" onclick="selectCoachSupport(2)"  id="csBtn2"  style="flex:1;height:44px;border:2px solid #dadce0;border-radius:6px;background:#ffffff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#5f6368;cursor:pointer;transition:all 0.15s;">2</button>
+        <button type="button" onclick="selectCoachSupport(3)"  id="csBtn3"  style="flex:1;height:44px;border:2px solid #dadce0;border-radius:6px;background:#ffffff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#5f6368;cursor:pointer;transition:all 0.15s;">3</button>
+        <button type="button" onclick="selectCoachSupport(4)"  id="csBtn4"  style="flex:1;height:44px;border:2px solid #dadce0;border-radius:6px;background:#ffffff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#5f6368;cursor:pointer;transition:all 0.15s;">4</button>
+        <button type="button" onclick="selectCoachSupport(5)"  id="csBtn5"  style="flex:1;height:44px;border:2px solid #dadce0;border-radius:6px;background:#ffffff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#5f6368;cursor:pointer;transition:all 0.15s;">5</button>
+        <button type="button" onclick="selectCoachSupport(6)"  id="csBtn6"  style="flex:1;height:44px;border:2px solid #dadce0;border-radius:6px;background:#ffffff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#5f6368;cursor:pointer;transition:all 0.15s;">6</button>
+        <button type="button" onclick="selectCoachSupport(7)"  id="csBtn7"  style="flex:1;height:44px;border:2px solid #dadce0;border-radius:6px;background:#ffffff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#5f6368;cursor:pointer;transition:all 0.15s;">7</button>
+        <button type="button" onclick="selectCoachSupport(8)"  id="csBtn8"  style="flex:1;height:44px;border:2px solid #dadce0;border-radius:6px;background:#ffffff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#5f6368;cursor:pointer;transition:all 0.15s;">8</button>
+        <button type="button" onclick="selectCoachSupport(9)"  id="csBtn9"  style="flex:1;height:44px;border:2px solid #dadce0;border-radius:6px;background:#ffffff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#5f6368;cursor:pointer;transition:all 0.15s;">9</button>
+        <button type="button" onclick="selectCoachSupport(10)" id="csBtn10" style="flex:1;height:44px;border:2px solid #dadce0;border-radius:6px;background:#ffffff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#5f6368;cursor:pointer;transition:all 0.15s;">10</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;">
+        <span style="font-size:11px;color:#9aa0a6;">1</span>
+        <span style="font-size:11px;color:#9aa0a6;">10</span>
+      </div>
+    </div>
+    <input type="hidden" name="coach_support_rating" id="coach_support_rating" value=""/>
+    <p class="hint" id="coachSupportHint" style="margin-top:8px;"></p>
+  </div>
+
+  <div class="section-label">End of Shift Check-in</div>
+  <div class="field">
+    <label>How's your energy & spirit after this shift? <span class="req">*</span></label>
+    <div class="energy-options">
+      <div class="energy-btn e1" onclick="selectEnergy(this, 'Drained')"><div class="energy-dot"></div><span class="energy-emoji">😔</span><span class="energy-text">Drained</span><span class="energy-desc">Tough shift</span></div>
+      <div class="energy-btn e2" onclick="selectEnergy(this, 'Tired')"><div class="energy-dot"></div><span class="energy-emoji">😐</span><span class="energy-text">Tired</span><span class="energy-desc">Ready to rest</span></div>
+      <div class="energy-btn e3" onclick="selectEnergy(this, 'Okay')"><div class="energy-dot"></div><span class="energy-emoji">🙂</span><span class="energy-text">Okay</span><span class="energy-desc">Solid shift</span></div>
+      <div class="energy-btn e4" onclick="selectEnergy(this, 'Energized')"><div class="energy-dot"></div><span class="energy-emoji">😊</span><span class="energy-text">Energized</span><span class="energy-desc">Great connections</span></div>
+      <div class="energy-btn e5" onclick="selectEnergy(this, 'Amazing')"><div class="energy-dot"></div><span class="energy-emoji">🤩</span><span class="energy-text">Amazing</span><span class="energy-desc">Best shift ever</span></div>
+    </div>
+    <input type="hidden" name="energy_level" id="energy_level" value=""/>
+  </div>
+
+  <div class="section-label">Anything Else?</div>
+  <div class="field">
+    <label>Did anything prevent you from completing your shift tasks?</label>
+    <textarea name="blockers" placeholder="Optional — explain any blockers or things leadership should know..."></textarea>
+  </div>
+
+  <div class="submit-wrap">
+    <button type="submit" class="submit-btn" id="submitBtn">Submit Shift Report</button>
+  </div>
+
+</form>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-icon" style="background:#f0a500;">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <path d="M14 9v6M14 20v.5" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="14" cy="14" r="11" stroke="white" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <div class="modal-title">Double Check!</div>
+    <div class="modal-msg">You're about to submit a shift report for:<br/><br/><strong id="confirmStudioName" style="font-family:'Barlow Condensed',sans-serif;font-size:24px;letter-spacing:0.1em;text-transform:uppercase;color:#1557b0;display:block;"></strong><br/>Is that the right studio?</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button class="modal-close" style="background:#e8eaed;color:#202124;" onclick="document.getElementById('confirmModal').classList.remove('visible');">Go Back</button>
+      <button class="modal-close" id="confirmSubmitBtn">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <path d="M6 14L11 19L22 8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="modal-title">Thank You!</div>
+    <div class="modal-msg">Your shift report has been submitted.<br/><br/>Thank you for elevating the client experience at [solidcore] <span id="modalStudioName"></span>. 💙</div>
+    <button class="modal-close" onclick="document.getElementById('successModal').classList.remove('visible'); window.location.reload();">Done</button>
+  </div>
+</div>
+
+<script>
+  // ── Date default ──────────────────────────────────────────
+  document.querySelector('input[name="date"]').valueAsDate = new Date();
+
+  // ── Studio config (extend with per-studio links & contacts later) ──
+  const STUDIO_CONFIG = {
+    'LIC':           { unpaid: 'https://drive.google.com/drive/u/2/folders/1THgn7AQZvH14rVbHlxOqjnmx72FD6cPD', nab: 'https://drive.google.com/drive/folders/121UHDNK0D0qp8_kI_u4TOQ4AjXxzY-h_', managers: [{ name: 'Juan Zapata', email: 'juan.zapata@solidcore.co' }] },
+    'Williamsburg':  { unpaid: 'https://drive.google.com/drive/folders/1VG9gkF_M2YHlTvjzrrPk3ZHAejjq82wk', nab: 'https://drive.google.com/drive/folders/1vzuZuUylJTqeS3zwnecGiREmXp3V5wVS', managers: [{ name: 'Kate Martino', email: 'kathleen.martino@solidcore.co' }] },
+    'DUMBO':         { unpaid: 'https://drive.google.com/drive/folders/1-mbkTpXWCnYbN9n08wQ0QcWtin1502MA', nab: 'https://drive.google.com/drive/folders/1mM5-2Xhy27mPpjpXwIvYn_ydiBhm_6Zf', managers: [{ name: 'Isabel Daly', email: 'isabel.daly@solidcore.co' }] },
+    'DTBK':          { unpaid: 'https://drive.google.com/drive/folders/1NOCunak1S1X4JVVqUsXs4TVcy6PTrigz', nab: 'https://drive.google.com/drive/folders/10xSPOrrlHVK-JCxGGK4ZK6zcjZANaGCi', managers: [{ name: 'Isabel Daly', email: 'isabel.daly@solidcore.co' }] },
+    'Darien':        { unpaid: 'https://drive.google.com/drive/folders/1EFaDIHUXOaEFUFAh76t0waqkkbS-gGj2', nab: 'https://drive.google.com/drive/folders/1Z5BTsf_N6U136f0j3cMNfNdrMT3yceJR', managers: [{ name: 'Keiry Gomez', email: 'keiry.gomez@solidcore.co' }, { name: 'Patricia Mercado', email: 'patricia.mercado@solidcore.co' }] },
+    'West Hartford': { unpaid: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', nab: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', managers: [{ name: 'Gianna', email: 'gianna.damato@solidcore.co' }] },
+    'Westport':      { unpaid: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', nab: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
+    'Scarsdale':     { unpaid: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', nab: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
+  };
+
+  function onStudioChange(studio) {
+    const config = STUDIO_CONFIG[studio];
+    if (!config) return;
+    // Update tracker links
+    document.getElementById('unpaidTrackerLink').href = config.unpaid;
+    document.getElementById('nabTrackerLink').href = config.nab;
+    // Rebuild notify list
+    const notifyList = document.getElementById('notifyList');
+    notifyList.innerHTML = '';
+    if (config.managers.length === 0) {
+      notifyList.innerHTML = '<p style="font-size:13px;color:#5f6368;font-style:italic;">No manager assigned yet — check POC sheet below.</p>';
+    } else {
+      config.managers.forEach(m => {
+        notifyList.innerHTML += `
+          <div class="notify-item locked">
+            <input type="checkbox" name="notify_issue" value="${m.email}" checked disabled/>
+            <div class="notify-box"><svg width="10" height="8" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <span class="notify-name">${m.name}</span>
+            <span class="notify-email">${m.email}</span>
+          </div>`;
+      });
+    }
+    // Always add Inger and Anastasiia as optional
+    notifyList.innerHTML += `
+      <div class="notify-item" onclick="toggleNotify(this)">
+        <input type="checkbox" name="notify_issue" value="inger@solidcore.co"/>
+        <div class="notify-box"><svg width="10" height="8" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="notify-name">Inger</span>
+        <span class="notify-email">inger@solidcore.co</span>
+      </div>
+      <div class="notify-item" onclick="toggleNotify(this)">
+        <input type="checkbox" name="notify_issue" value="anastasiia.lazarieva@solidcore.co"/>
+        <div class="notify-box"><svg width="10" height="8" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="notify-name">Anastasiia</span>
+        <span class="notify-email">anastasiia.lazarieva@solidcore.co</span>
+      </div>`;
+    document.getElementById('studioError').classList.remove('visible');
+  }
+
+  // ── AXLE toggle ───────────────────────────────────────────
+  function toggleAxle(item) {
+    const sub = document.getElementById('axleSub');
+    const hint = document.getElementById('axleHint');
+    const isOpen = sub.style.display !== 'none';
+    sub.style.display = isOpen ? 'none' : 'block';
+    hint.textContent = isOpen ? '▾ tap to expand' : '▴ collapse';
+    const cb = item.querySelector('input[type="checkbox"]');
+    if (cb) { cb.checked = !isOpen; item.classList.toggle('checked', !isOpen); }
+  }
+
+  function selectEnergy(el, value) {
+    document.querySelectorAll('.energy-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('energy_level').value = value;
+  }
+
+  function toggleNotify(el) {
+    if (el.classList.contains('locked')) return;
+    el.classList.toggle('checked');
+    el.querySelector('input[type="checkbox"]').checked = el.classList.contains('checked');
+  }
+
+  function toggleCheck(el) {
+    el.classList.toggle('checked');
+    el.querySelector('input[type="checkbox"]').checked = el.classList.contains('checked');
+    updateProgress();
+  }
+
+  // ── Steppers ──────────────────────────────────────────────
+  const stepValues = { membership_sales: 0, nc_specials: 0 };
+  function stepUp(id, btnEl) {
+    stepValues[id]++;
+    document.getElementById(id + '_display').textContent = stepValues[id];
+    document.getElementById(id).value = stepValues[id];
+    if (!btnEl) return;
+    const emojis = ['🔥','⚡','✨','💙','🎉','💪','🌟'];
+    const rect = btnEl.getBoundingClientRect();
+    for (let i = 0; i < 3; i++) {
+      setTimeout(() => {
+        const el = document.createElement('span');
+        el.style.cssText = 'position:fixed;font-size:22px;pointer-events:none;z-index:99999;animation:burstUp 0.8s ease-out forwards;';
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = (rect.left + rect.width / 2 + (Math.random() * 40 - 20)) + 'px';
+        el.style.top = (rect.top - 10) + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 900);
+      }, i * 100);
+    }
+  }
+  function stepDown(id) {
+    if (stepValues[id] > 0) {
+      stepValues[id]--;
+      document.getElementById(id + '_display').textContent = stepValues[id];
+      document.getElementById(id).value = stepValues[id];
+    }
+  }
+
+  // ── Issues visibility ─────────────────────────────────────
+  function updateSharedNotify() {
+    const clientYes = document.querySelector('input[name="client_issues"]:checked')?.value === 'Yes';
+    const facilitiesYes = document.querySelector('input[name="facilities_issues"]:checked')?.value === 'Yes';
+    document.getElementById('shared_notify').style.display = (clientYes || facilitiesYes) ? 'block' : 'none';
+  }
+
+  document.querySelectorAll('input[name="client_issues"]').forEach(r => {
+    r.addEventListener('change', () => {
+      const isYes = document.querySelector('input[name="client_issues"]:checked')?.value === 'Yes';
+      document.getElementById('client_issues_detail').style.display = isYes ? 'block' : 'none';
+      document.getElementById('client_action_taken').style.display = isYes ? 'block' : 'none';
+      updateSharedNotify();
+    });
+  });
+  document.querySelectorAll('input[name="facilities_issues"]').forEach(r => {
+    r.addEventListener('change', () => {
+      const isYes = document.querySelector('input[name="facilities_issues"]:checked')?.value === 'Yes';
+      document.getElementById('facilities_issues_detail').style.display = isYes ? 'block' : 'none';
+      document.getElementById('facilities_action_taken').style.display = isYes ? 'block' : 'none';
+      document.getElementById('facilities_media').style.display = isYes ? 'block' : 'none';
+      updateSharedNotify();
+    });
+  });
+
+  // ── Progress bar ──────────────────────────────────────────
+  function updateProgress() {
+    const required = document.querySelectorAll('[required]');
+    let filled = 0;
+    const seen = new Set();
+    required.forEach(el => {
+      if (el.type === 'radio') {
+        if (!seen.has(el.name) && document.querySelector(`[name="${el.name}"]:checked`)) { filled++; seen.add(el.name); }
+        else seen.add(el.name);
+      } else if (el.value.trim()) filled++;
+    });
+    document.getElementById('progressBar').style.width = Math.round((filled / required.length) * 100) + '%';
+  }
+
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    el.addEventListener('input', updateProgress);
+    el.addEventListener('change', updateProgress);
+  });
+
+  // ── Google Apps Script endpoint ───────────────────────────
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6caiVeH2EJRWnykRozWxfLxK2E40Rs9RWZiVeBpczkpzfA-HvJJR4qo1R8TN-tFNp/exec';
+
+  // ── Submit — validate then show confirm modal ────────────
+  document.getElementById('shiftForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Validate studio
+    const studio = document.getElementById('studio_select').value;
+    if (!studio) {
+      document.getElementById('studioError').classList.add('visible');
+      document.getElementById('studio_select').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // Validate community notes
+    const communityNotes = document.querySelector('textarea[name="community_notes"]').value.trim();
+    if (!communityNotes) {
+      document.querySelector('textarea[name="community_notes"]').style.borderColor = '#ff6b6b';
+      document.querySelector('textarea[name="community_notes"]').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.querySelector('textarea[name="community_notes"]').placeholder = '⚠️ This field is required before submitting.';
+      return;
+    }
+
+    // Validate energy
+    const energyLevel = document.getElementById('energy_level').value;
+    if (!energyLevel) {
+      document.querySelector('.energy-options').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const existing = document.getElementById('energy-error');
+      if (!existing) {
+        const err = document.createElement('p');
+        err.id = 'energy-error';
+        err.style.cssText = 'color:#ff6b6b;font-size:13px;font-weight:600;margin-top:10px;letter-spacing:0.05em;';
+        err.textContent = '⚠️ Please select your energy & spirit before submitting.';
+        document.querySelector('.energy-options').after(err);
+      }
+      return;
+    }
+    const energyErr = document.getElementById('energy-error');
+    if (energyErr) energyErr.remove();
+
+    // Validate coach support rating
+    const coachRating = document.getElementById('coach_support_rating').value;
+    if (!coachRating) {
+      document.querySelector('#coach_support_rating').closest('.field').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('coachSupportHint').textContent = '⚠️ Please select a rating before submitting.';
+      document.getElementById('coachSupportHint').style.color = '#c5221f';
+      return;
+    }
+
+    // All valid — show confirm modal
+    document.getElementById('confirmStudioName').textContent = studio;
+    document.getElementById('confirmModal').classList.add('visible');
+  });
+
+  // ── Actual submission (fires after confirm) ───────────────
+  document.getElementById('confirmSubmitBtn').addEventListener('click', function() {
+    document.getElementById('confirmModal').classList.remove('visible');
+    const studio = document.getElementById('studio_select').value;
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    const data = new FormData(document.getElementById('shiftForm'));
+    const checklistLabels = {
+      brand_standards: 'Brand Standards',
+      stop_drop_checkin: 'Stop Drop Check-In',
+      inbox: 'Inbox Cleared',
+      axle: 'AXLE',
+      unpaid_class: 'Unpaid Class Tomorrow',
+      nab_outreach: 'NAB Outreach',
+      milestones: 'Milestones',
+      supply_order: 'Supply Order'
+    };
+    const checked = [...document.querySelectorAll('input[name="checklist"]:checked')]
+      .map(c => checklistLabels[c.value] || c.value).join(' | ');
+    data.set('checklist', checked);
+
+    const notifyEmails = [...document.querySelectorAll('input[name="notify_issue"]')].map(c => c.value).filter(Boolean);
+    data.set('notify_client_emails', notifyEmails.join(','));
+    data.set('notify_facilities_emails', notifyEmails.join(','));
+
+    const payload = {};
+    data.forEach((val, key) => { payload[key] = val; });
+    payload.submitted_at = new Date().toISOString();
+    payload.energy_level = document.getElementById('energy_level').value || '';
+    payload.studio = studio;
+
+    const axleItems = [...document.querySelectorAll('input[name^="axle_"]:checked')].map(c => c.value);
+    const axleLabels = { voicemails_cleared: 'Voicemails Cleared', clients_called_back: 'Clients Called Back', non_sales_texts: 'Non-Sales Texts Addressed', first_class_bucket: 'First Class Bucket Cleared' };
+    if (axleItems.length > 0) {
+      const axleLabeled = axleItems.map(v => axleLabels[v] || v).join(' | ');
+      payload.checklist = (payload.checklist ? payload.checklist + ' | ' : '') + axleLabeled;
+    }
+
+    // Fire and forget — no-cors means we can't read the response
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(() => {}); // silently catch any network error
+
+    // Always show success immediately — data is saved
+    document.getElementById('progressBar').style.width = '100%';
+    btn.textContent = '✓ Submitted';
+    document.getElementById('modalStudioName').textContent = studio;
+    document.getElementById('successModal').classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });  // end confirmSubmitBtn
+
+  // ── Autosave ──────────────────────────────────────────────
+  const SAVE_KEY = 'solidcore_unified_shift_draft_v1';
+  let formSubmitted = false;
+
+  function saveFormDraft() {
+    if (formSubmitted) return;
+    try {
+      const data = {};
+      document.querySelectorAll('input[type="text"], input[type="email"], input[type="date"], select, textarea').forEach(el => {
+        if (el.name) data[el.name] = el.value;
+      });
+      document.querySelectorAll('input[type="radio"]:checked').forEach(el => { data[el.name] = el.value; });
+      document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+        data['cb_' + el.value] = el.closest('.check-item') ? el.closest('.check-item').classList.contains('checked') : false;
+      });
+      data['energy_level'] = document.getElementById('energy_level').value || '';
+      data['coach_support_rating'] = document.getElementById('coach_support_rating').value || '';
+      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+      const badge = document.getElementById('autosaveBadge');
+      if (badge) { badge.classList.add('visible'); setTimeout(() => badge.classList.remove('visible'), 2000); }
+    } catch(e) { console.warn('Autosave failed:', e); }
+  }
+
+  function loadFormDraft() {
+    try {
+      const saved = localStorage.getItem(SAVE_KEY);
+      if (!saved) return;
+      const data = JSON.parse(saved);
+      Object.entries(data).forEach(([key, val]) => {
+        if (key.startsWith('cb_')) {
+          const cbVal = key.replace('cb_', '');
+          const cb = document.querySelector(`input[type="checkbox"][value="${cbVal}"]`);
+          if (cb && val) { const item = cb.closest('.check-item'); if (item) { item.classList.add('checked'); cb.checked = true; } }
+        } else if (key === 'coach_support_rating') {
+          if (val) selectCoachSupport(parseInt(val));
+        } else if (key === 'energy_level') {
+          if (val) {
+            document.getElementById('energy_level').value = val;
+            document.querySelectorAll('.energy-btn').forEach(btn => {
+              if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(val)) btn.classList.add('selected');
+            });
+          }
+        } else {
+          const el = document.querySelector(`[name="${key}"]`);
+          if (!el) return;
+          if (el.type === 'radio') {
+            const r = document.querySelector(`input[name="${key}"][value="${val}"]`);
+            if (r) { r.checked = true; r.dispatchEvent(new Event('change')); }
+          } else {
+            el.value = val;
+            if (key === 'studio') onStudioChange(val);
+          }
+        }
+      });
+      updateProgress();
+    } catch(e) { localStorage.removeItem(SAVE_KEY); }
+  }
+
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    el.addEventListener('input', saveFormDraft);
+    el.addEventListener('change', saveFormDraft);
+    el.addEventListener('keyup', saveFormDraft);
+  });
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.check-item') || e.target.closest('.energy-btn')) setTimeout(saveFormDraft, 100);
+  });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveFormDraft(); });
+  window.addEventListener('beforeunload', saveFormDraft);
+  window.addEventListener('pagehide', saveFormDraft);
+
+  // Clear old draft keys
+  ['solidcore_shift_draft','solidcore_lic_shift_draft','solidcore_lic_shift_draft_v2','solidcore_lic_shift_draft_v3','solidcore_lic_shift_draft_v4'].forEach(k => localStorage.removeItem(k));
+
+  loadFormDraft();
+
+  document.getElementById('shiftForm').addEventListener('submit', function() {
+    formSubmitted = true;
+    localStorage.removeItem(SAVE_KEY);
+  }, true);
+
+  updateProgress();
+
+
+  // ── Coach support rating ──────────────────────────────────
+  const COACH_COLORS = {
+    1: '#c5221f', 2: '#d93025', 3: '#e37400', 4: '#f29900', 5: '#f0b400',
+    6: '#ceac00', 7: '#7cb342', 8: '#43a047', 9: '#2e7d32', 10: '#137333'
+  };
+  const COACH_LABELS = {
+    1: 'Not supported at all', 2: 'Barely there', 3: 'Mostly absent',
+    4: 'Hit or miss', 5: 'Neutral', 6: 'Somewhat supportive',
+    7: 'Pretty good', 8: 'Solid support', 9: 'Really supportive', 10: 'Fully supported!'
+  };
+  function selectCoachSupport(val) {
+    document.getElementById('coach_support_rating').value = val;
+    const color = COACH_COLORS[val];
+    document.getElementById('coachSupportDisplay').textContent = val;
+    document.getElementById('coachSupportDisplay').style.color = color;
+    document.getElementById('coachSupportHint').textContent = COACH_LABELS[val];
+    document.getElementById('coachSupportHint').style.color = color;
+    for (var i = 1; i <= 10; i++) {
+      const btn = document.getElementById('csBtn' + i);
+      if (!btn) continue;
+      if (i === val) {
+        btn.style.background = color;
+        btn.style.borderColor = color;
+        btn.style.color = '#ffffff';
+        btn.style.transform = 'scale(1.1)';
+      } else {
+        btn.style.background = '#ffffff';
+        btn.style.borderColor = '#dadce0';
+        btn.style.color = '#5f6368';
+        btn.style.transform = 'scale(1)';
+      }
+    }
+    updateProgress();
+  }
+
+  // ── Rotating shift goal placeholders ─────────────────────
+  const GOAL_EXAMPLES = [
+    "Convert at least 1 new client special today",
+    "Follow up with 3 trial clients from yesterday's classes",
+    "Have a membership conversation with every first-timer checking in",
+    "Learn 5 new client names and use them during check-in",
+    "Recognize at least 2 client milestones during the shift",
+    "Create a standout moment for every new client checking in today",
+    "Clear the AXLE first class bucket before the first class starts",
+    "Complete NAB outreach before end of shift",
+    "Have the studio fully restocked within the first hour",
+    "Stand up and greet every single check-in today",
+    "Stay off my phone during all check-in windows",
+    "Be fully present and proactive — no waiting, always moving"
+  ];
+  const goalTextarea = document.getElementById('shiftGoalTextarea');
+  const goalHint = document.getElementById('goalHint');
+  if (goalTextarea) {
+    const randomGoal = GOAL_EXAMPLES[Math.floor(Math.random() * GOAL_EXAMPLES.length)];
+    goalTextarea.placeholder = randomGoal;
+    goalHint.textContent = '💡 Example goal — replace with your own focus for this shift.';
+  }
+</script>
+</body>
+</html>
