@@ -1,4 +1,36 @@
 <!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║         [solidcore] BK/CT End of Shift Report               ║
+  ║         GitHub: licsolidocore/solidcore-bkct-shifts          ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  CHANGELOG                                                   ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  Jul 22, 2026                                                ║
+  ║  • Added Core Crew Bingo module (LIC only, July 2026)        ║
+  ║    — 4x4 grid, leaderboard, raffle entry tracking            ║
+  ║    — Marked DELETE IN AUGUST throughout                      ║
+  ║  • Updated Cancel Pilot Feedback to Yes/No radio             ║
+  ║    with conditional textarea + Learn More button             ║
+  ║  • Updated West Hartford tracker links (Unpaid + NAB)        ║
+  ║  • Updated Westport tracker links (Unpaid + NAB)             ║
+  ║  • Updated Scarsdale tracker links (Unpaid + NAB)            ║
+  ║  • Updated DUMBO manager to Alicia Thwaites                  ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  Jun 20, 2026                                                ║
+  ║  • Removed Cash Payment Tracking section (30-day pilot over) ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  Jun 05, 2026                                                ║
+  ║  • Added Late Cancel Pilot Feedback field (under LCEs)       ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  May 2026                                                    ║
+  ║  • Initial unified BK/CT form launch                         ║
+  ║  • 8 studios: LIC, WB, DUMBO, DTBK, Darien, WH,             ║
+  ║    Westport, Scarsdale                                        ║
+  ║  • Per-studio tracker links, notify section, autosave        ║
+  ║  • Connected to Apps Script backend + Master Sheet           ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -681,6 +713,7 @@
   }
   .bng-toast.show{display:block;}
   /* ═══ END CORE CREW BINGO CSS ═══ */
+
 </style>
 </head>
 <body>
@@ -739,6 +772,7 @@
   </div>
   <p style="font-size:11px;color:#5f6368;font-style:italic;margin-top:-16px;margin-bottom:24px;">💡 <strong>Shift Buddy:</strong> Must be logged into the studio inbox to access.</p>
 
+  
   <!-- ═══════════════════════════════════════════════════════
        CORE CREW BINGO — July 2026 (LIC ONLY)
        DELETE from here to "END CORE CREW BINGO HTML" in August
@@ -756,12 +790,10 @@
       <div class="bng-body">
         <div class="bng-loading" id="bngLoading">Loading bingo…</div>
         <div id="bngContent" style="display:none;">
-
           <div class="bng-tabs">
             <button type="button" class="bng-tab active" id="bngTabBoard" onclick="bngShowView('board')">My Board</button>
             <button type="button" class="bng-tab" id="bngTabLb" onclick="bngShowView('lb')">Leaderboard</button>
           </div>
-
           <div id="bngBoardView">
             <div class="bng-picker" id="bngPicker">
               <input type="text" id="bngNameSearch" placeholder="🔍 Search your name to load your board…" autocomplete="off"/>
@@ -775,13 +807,11 @@
             <div class="bng-grid" id="bngGrid" style="display:none;"></div>
             <p class="bng-hint" id="bngBoardHint" style="display:none;">Tap a square to log it · multi-sale squares fill up as you go (1/3 → 2/3 → ✓) · tap again to fix a mistake</p>
           </div>
-
           <div id="bngLbView" style="display:none;">
             <div id="bngLbRows"></div>
             <button type="button" class="bng-lb-more" id="bngLbMoreBtn" onclick="bngToggleLb()">View full leaderboard ▾</button>
             <p class="bng-hint">🎟️ = raffle entries (rows, columns &amp; diagonals) · full blackout earns a bonus studio-prize entry</p>
           </div>
-
         </div>
       </div>
     </div>
@@ -888,7 +918,7 @@
         <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <span class="check-text">Negative account balance outreach</span>
       </div>
-      <a id="nabTrackerLink" onclick="interceptLink(event)" href="https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📊 NAB Tracker</a>
+      <a id="nabTrackerLink" onclick="interceptLink(event)" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📊 NAB Tracker</a>
     </div>
     <div class="check-item" onclick="toggleCheck(this)">
       <input type="checkbox" name="checklist" value="milestones"/>
@@ -1116,22 +1146,6 @@
   </div>
 </div>
 
-<!-- ═══ CORE CREW BINGO — claim/undo/register modal + toast (DELETE IN AUGUST) ═══ -->
-<div class="bng-overlay" id="bngOverlay">
-  <div class="bng-modal">
-    <h3 id="bngModalTitle"></h3>
-    <p id="bngModalTask"></p>
-    <div class="bng-warn" id="bngWarn" style="display:none;">Looks like <b id="bngWarnMatch"></b> is already on the roster — is that you? If so, cancel and select that name instead. If you're a different person, tap "Yes, add me" again.</div>
-    <div class="bng-btns">
-      <button type="button" onclick="bngCloseModal()">Cancel</button>
-      <button type="button" class="bng-danger" id="bngModalUndo" onclick="bngUndo()" style="display:none;">Remove last −1</button>
-      <button type="button" class="bng-primary" id="bngModalAction" onclick="bngModalConfirm()"></button>
-    </div>
-  </div>
-</div>
-<div class="bng-toast" id="bngToast"></div>
-<!-- ═══ END CORE CREW BINGO MODAL ═══ -->
-
 <script>
   // ── Date default ──────────────────────────────────────────
   document.querySelector('input[name="date"]').valueAsDate = new Date();
@@ -1143,9 +1157,9 @@
     'DUMBO':         { unpaid: 'https://drive.google.com/drive/folders/1-mbkTpXWCnYbN9n08wQ0QcWtin1502MA', nab: 'https://drive.google.com/drive/folders/1mM5-2Xhy27mPpjpXwIvYn_ydiBhm_6Zf', managers: [{ name: 'Alicia Thwaites', email: 'alicia.thwaites@solidcore.co' }] },
     'DTBK':          { unpaid: 'https://drive.google.com/drive/folders/1NOCunak1S1X4JVVqUsXs4TVcy6PTrigz', nab: 'https://drive.google.com/drive/folders/10xSPOrrlHVK-JCxGGK4ZK6zcjZANaGCi', managers: [{ name: 'Isabel Daly', email: 'isabel.daly@solidcore.co' }] },
     'Darien':        { unpaid: 'https://drive.google.com/drive/folders/1EFaDIHUXOaEFUFAh76t0waqkkbS-gGj2', nab: 'https://drive.google.com/drive/folders/1Z5BTsf_N6U136f0j3cMNfNdrMT3yceJR', managers: [{ name: 'Keiry Gomez', email: 'keiry.gomez@solidcore.co' }, { name: 'Patricia Mercado', email: 'patricia.mercado@solidcore.co' }] },
-    'West Hartford': { unpaid: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', nab: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', managers: [{ name: 'Gianna', email: 'gianna.damato@solidcore.co' }] },
-    'Westport':      { unpaid: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', nab: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
-    'Scarsdale':     { unpaid: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', nab: 'https://drive.google.com/drive/folders/1a0-a2lPyuw7Cbk0jGQBQo0Mxcaj7h3zz', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
+    'West Hartford': { unpaid: 'https://drive.google.com/drive/folders/1PVDQHEu-FQgMbloi24NwD9fyQ57mp6NY', nab: 'https://drive.google.com/drive/folders/1CLABxGoVpm-0mciFMVIxmo3hBquCm_SH', managers: [{ name: 'Gianna', email: 'gianna.damato@solidcore.co' }] },
+    'Westport':      { unpaid: 'https://drive.google.com/drive/folders/15PFgGQGr7JbFShtEXmEUu4CMIyikMlzu', nab: 'https://drive.google.com/drive/folders/18pTt7i2tf8hROgGyaLXNSemoUsn-IgQz', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
+    'Scarsdale':     { unpaid: 'https://drive.google.com/drive/folders/1XBuzvpsrxdkSg82-Xgb_ZEQxaP3ZG_Jk', nab: 'https://drive.google.com/drive/folders/1fSXTjgIGkkuNMVBCuwsZqIMc8F7eOEcT', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
   };
 
   function interceptLink(e, linkId) {
@@ -1160,11 +1174,6 @@
   }
 
   function onStudioChange(studio) {
-    // ── CORE CREW BINGO: show for LIC only (DELETE these 3 lines in August) ──
-    const bingoModule = document.getElementById('bingoModule');
-    if (bingoModule) bingoModule.style.display = (studio === 'LIC') ? 'block' : 'none';
-    if (studio === 'LIC') setTimeout(function(){ bngLoad(); }, 0);
-
     const config = STUDIO_CONFIG[studio];
     if (!config) return;
     // Update tracker links
@@ -1283,13 +1292,6 @@
       document.getElementById('facilities_action_taken').style.display = isYes ? 'block' : 'none';
       document.getElementById('facilities_media').style.display = isYes ? 'block' : 'none';
       updateSharedNotify();
-    });
-  });
-
-  document.querySelectorAll('input[name="lc_pilot_feedback_yn"]').forEach(r => {
-    r.addEventListener('change', () => {
-      const isYes = document.querySelector('input[name="lc_pilot_feedback_yn"]:checked')?.value === 'Yes';
-      document.getElementById('lc_pilot_detail').style.display = isYes ? 'block' : 'none';
     });
   });
 
@@ -1585,9 +1587,9 @@
     [0,5,10,15],[3,6,9,12]
   ];
 
-  let bngRoster = [];        // array of names
-  let bngClaims = {};        // name -> { squareIndex: [dates] }
-  let bngMe = null;          // selected player name
+  let bngRoster = [];
+  let bngClaims = {};
+  let bngMe = null;
   let bngLoaded = false;
   let bngLoadingNow = false;
   let bngPendingIdx = null;
@@ -1625,7 +1627,6 @@
       bngLoaded = true;
       document.getElementById('bngLoading').style.display = 'none';
       document.getElementById('bngContent').style.display = 'block';
-      // auto-restore player from this device
       const saved = localStorage.getItem(BNG_PLAYER_KEY);
       if (saved && bngRoster.some(n => n.toLowerCase() === saved.toLowerCase())) {
         bngSelectPlayer(bngRoster.find(n => n.toLowerCase() === saved.toLowerCase()));
@@ -1647,13 +1648,13 @@
     if (v === 'lb') bngRenderLeaderboard();
   }
 
-  // ── Name search picker ──
-  document.getElementById('bngNameSearch').addEventListener('input', bngFilterNames);
-  document.getElementById('bngNameSearch').addEventListener('focus', bngFilterNames);
+  document.getElementById('bngNameSearch') && document.getElementById('bngNameSearch').addEventListener('input', bngFilterNames);
+  document.getElementById('bngNameSearch') && document.getElementById('bngNameSearch').addEventListener('focus', bngFilterNames);
   document.addEventListener('click', function(e) {
     const picker = document.getElementById('bngPicker');
     if (picker && !picker.contains(e.target)) {
-      document.getElementById('bngPickerList').classList.remove('show');
+      const list = document.getElementById('bngPickerList');
+      if (list) list.classList.remove('show');
     }
   });
 
@@ -1710,7 +1711,7 @@
       } else if (result.error === 'similar') {
         document.getElementById('bngWarnMatch').textContent = result.match;
         document.getElementById('bngWarn').style.display = 'block';
-        bngPendingRegister.confirmed = true; // next tap proceeds
+        bngPendingRegister.confirmed = true;
       } else {
         bngShowToast('⚠️ Couldn\'t register — try again');
       }
@@ -1812,7 +1813,6 @@
   async function bngDoClaim() {
     const i = bngPendingIdx;
     const before = bngCountEntries(bngClaims[bngMe]).total;
-    // optimistic local update
     if (!bngClaims[bngMe]) bngClaims[bngMe] = {};
     if (!bngClaims[bngMe][i]) bngClaims[bngMe][i] = [];
     const now = new Date();
@@ -1828,12 +1828,10 @@
     } else {
       bngShowToast('Logged ' + bngClaims[bngMe][i].length + '/' + bngTargetOf(i));
     }
-    // save to backend
     try {
       const result = await bngPostJson({ action: 'claim', name: bngMe, square: i, task: BNG_TASKS[i] });
       if (!result.ok) throw new Error(result.error);
     } catch (err) {
-      // roll back on failure
       bngClaims[bngMe][i].pop();
       if (bngClaims[bngMe][i].length === 0) delete bngClaims[bngMe][i];
       bngRenderBoard();
@@ -1845,18 +1843,15 @@
     const i = bngPendingIdx;
     const tallies = (bngClaims[bngMe] && bngClaims[bngMe][i]) || [];
     if (tallies.length === 0) { bngCloseModal(); return; }
-    // optimistic local update
     const removed = tallies.pop();
     if (tallies.length === 0) delete bngClaims[bngMe][i];
     bngCloseModal();
     bngRenderBoard();
     bngShowToast('Last entry removed');
-    // save to backend
     try {
       const result = await bngPostJson({ action: 'undo', name: bngMe, square: i });
       if (!result.ok) throw new Error(result.error);
     } catch (err) {
-      // roll back on failure
       if (!bngClaims[bngMe]) bngClaims[bngMe] = {};
       if (!bngClaims[bngMe][i]) bngClaims[bngMe][i] = [];
       bngClaims[bngMe][i].push(removed);
@@ -1905,6 +1900,24 @@
     setTimeout(function() { t.classList.remove('show'); }, 2600);
   }
   /* ═══ END CORE CREW BINGO JS ═══ */
+
 </script>
+
+<!-- ═══ CORE CREW BINGO — claim/undo/register modal + toast (DELETE IN AUGUST) ═══ -->
+<div class="bng-overlay" id="bngOverlay">
+  <div class="bng-modal">
+    <h3 id="bngModalTitle"></h3>
+    <p id="bngModalTask"></p>
+    <div class="bng-warn" id="bngWarn" style="display:none;">Looks like <b id="bngWarnMatch"></b> is already on the roster — is that you? If so, cancel and select that name instead. If you're a different person, tap "Yes, add me" again.</div>
+    <div class="bng-btns">
+      <button type="button" onclick="bngCloseModal()">Cancel</button>
+      <button type="button" class="bng-danger" id="bngModalUndo" onclick="bngUndo()" style="display:none;">Remove last −1</button>
+      <button type="button" class="bng-primary" id="bngModalAction" onclick="bngModalConfirm()"></button>
+    </div>
+  </div>
+</div>
+<div class="bng-toast" id="bngToast"></div>
+<!-- ═══ END CORE CREW BINGO MODAL ═══ -->
+
 </body>
 </html>
