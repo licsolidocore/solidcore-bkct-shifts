@@ -768,9 +768,9 @@
     <a href="https://docs.google.com/spreadsheets/d/1uvVXrRNcsX0E-ZE9VZDJ6P_n-AjPus1TTiXySQ-YFpU/edit?gid=1439431177#gid=1439431177" target="_blank" onclick="interceptLink(event)" style="flex:1;min-width:140px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#ffffff;color:#1557b0;border:2px solid #1557b0;padding:11px 16px;border-radius:8px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">📋 Visitor's Guide</a>
     <a href="https://docs.google.com/spreadsheets/d/1uvVXrRNcsX0E-ZE9VZDJ6P_n-AjPus1TTiXySQ-YFpU/edit?gid=937215114#gid=937215114" target="_blank" onclick="interceptLink(event)" style="flex:1;min-width:140px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#ffffff;color:#1557b0;border:2px solid #1557b0;padding:11px 16px;border-radius:8px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">📞 Point of Contact</a>
     <a href="https://docs.google.com/spreadsheets/d/1UH8LiMF0RvrJTTWayHnyLNMsHvLpTJ_NKXgOlgQWDVo" target="_blank" onclick="interceptLink(event)" style="flex:1;min-width:140px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#ffffff;color:#1557b0;border:2px solid #1557b0;padding:11px 16px;border-radius:8px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">📊 View Past Shift Reports</a>
-    <a href="https://notebooklm.google.com/notebook/7500918c-2c23-4c26-9a48-b48313e6993b" target="_blank" onclick="interceptLink(event)" style="flex:1;min-width:140px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#1557b0;color:#ffffff;border:2px solid #1557b0;padding:11px 16px;border-radius:8px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">🧑‍💻 Shift Buddy</a>
+    <a id="shiftBuddyBtn" href="https://notebooklm.google.com/notebook/7500918c-2c23-4c26-9a48-b48313e6993b" target="_blank" onclick="interceptLink(event)" style="display:none;flex:1;min-width:140px;align-items:center;justify-content:center;gap:8px;background:#1557b0;color:#ffffff;border:2px solid #1557b0;padding:11px 16px;border-radius:8px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">🧑‍💻 Shift Buddy</a>
   </div>
-  <p style="font-size:11px;color:#5f6368;font-style:italic;margin-top:-16px;margin-bottom:24px;">💡 <strong>Shift Buddy:</strong> Must be logged into the studio inbox to access.</p>
+  <p id="shiftBuddyNote" style="display:none;font-size:11px;color:#5f6368;font-style:italic;margin-top:-16px;margin-bottom:24px;">💡 <strong>Shift Buddy:</strong> Must be logged into the studio inbox to access.</p>
 
   
   <!-- ═══════════════════════════════════════════════════════
@@ -1174,6 +1174,12 @@
   }
 
   function onStudioChange(studio) {
+    // Shift Buddy — LIC only
+    const shiftBuddyBtn = document.getElementById('shiftBuddyBtn');
+    const shiftBuddyNote = document.getElementById('shiftBuddyNote');
+    if (shiftBuddyBtn) shiftBuddyBtn.style.display = (studio === 'LIC') ? 'inline-flex' : 'none';
+    if (shiftBuddyNote) shiftBuddyNote.style.display = (studio === 'LIC') ? 'block' : 'none';
+
     const config = STUDIO_CONFIG[studio];
     if (!config) return;
     // Update tracker links
