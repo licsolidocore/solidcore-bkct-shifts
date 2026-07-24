@@ -16,6 +16,8 @@
   ║  • Updated Westport tracker links (Unpaid + NAB)             ║
   ║  • Updated Scarsdale tracker links (Unpaid + NAB)            ║
   ║  • Updated DUMBO manager to Alicia Thwaites                  ║
+  ║  • Shift Buddy button now LIC-only (hidden for all other     ║
+  ║    studios, shown dynamically on studio selection)           ║
   ╠══════════════════════════════════════════════════════════════╣
   ║  Jun 20, 2026                                                ║
   ║  • Removed Cash Payment Tracking section (30-day pilot over) ║
@@ -1174,6 +1176,11 @@
   }
 
   function onStudioChange(studio) {
+    // ── CORE CREW BINGO: show for LIC only (DELETE these 3 lines in August) ──
+    const bingoModule = document.getElementById('bingoModule');
+    if (bingoModule) bingoModule.style.display = (studio === 'LIC') ? 'block' : 'none';
+    if (studio === 'LIC') setTimeout(function(){ bngLoad(); }, 0);
+
     // Shift Buddy — LIC only
     const shiftBuddyBtn = document.getElementById('shiftBuddyBtn');
     const shiftBuddyNote = document.getElementById('shiftBuddyNote');
