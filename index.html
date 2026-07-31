@@ -7,7 +7,9 @@
   ║  CHANGELOG                                                   ║
   ╠══════════════════════════════════════════════════════════════╣
   ║  Jul 31, 2026                                                ║
-  ║  • Removed SPIF Submission button from Sales Notes           ║
+  ║  • Added Coach Support notes field (always visible)          ║
+  ║  • Moved Blockers under Coach Support section                ║
+  ║  • Removed Anything Else section                             ║
   ║  • Shift Time changed from dropdown to toggle pills           ║
   ║    — multi-select, consistent with form style                ║
   ║  • Fixed LC Pilot Feedback not expanding on Yes tap          ║
@@ -1098,6 +1100,10 @@
     </div>
     <input type="hidden" name="coach_support_rating" id="coach_support_rating" value=""/>
     <p class="hint" id="coachSupportHint" style="margin-top:8px;"></p>
+  </div>
+  <div class="field">
+    <label>Coach support notes</label>
+    <textarea name="coach_support_notes" placeholder="What worked well or could have been better? Share anything about your experience with coach support this shift..."></textarea>
   </div>
 
   <div class="section-label">End of Shift Check-in</div>
