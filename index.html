@@ -1369,10 +1369,11 @@
     e.preventDefault();
 
     // Collect multi-shift selection
-    const shiftTimes = [...document.querySelectorAll('input[name="shift_time"]:checked')].map(c => c.value);
+    const shiftTimes = [...document.querySelectorAll('.shift-pill[data-active="true"]')].map(p => p.getAttribute('data-value'));
     if (shiftTimes.length === 0) {
-      const firstShift = document.querySelector('input[name="shift_time"]');
-      if (firstShift) firstShift.closest('.notify-item').style.border = '1.5px solid #c5221f';
+      const firstPill = document.querySelector('.shift-pill');
+      if (firstPill) firstPill.style.border = '2px solid #c5221f';
+      firstPill.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
     document.getElementById('shift_time_combined').value = shiftTimes.join(' + ');
