@@ -6,6 +6,12 @@
   ╠══════════════════════════════════════════════════════════════╣
   ║  CHANGELOG                                                   ║
   ╠══════════════════════════════════════════════════════════════╣
+  ║  Jul 31, 2026                                                ║
+  ║  • Removed SPIF Submission button from Sales Notes           ║
+  ║  • Shift Time changed from dropdown to toggle pills           ║
+  ║    — multi-select, consistent with form style                ║
+  ║  • Fixed LC Pilot Feedback not expanding on Yes tap          ║
+  ╠══════════════════════════════════════════════════════════════╣
   ║  Jul 24, 2026                                                ║
   ║  • Fixed bingo not showing for LIC — onStudioChange was      ║
   ║    missing the bingoModule show/hide lines after Shift        ║
@@ -843,12 +849,13 @@
     </div>
     <div class="field">
       <label>Shift Time <span class="req">*</span></label>
-      <select name="shift_time" required>
-        <option value="">Select shift</option>
-        <option>Opening (AM)</option>
-        <option>Mid</option>
-        <option>Closing (PM)</option>
-      </select>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;" id="shiftPills">
+        <div class="shift-pill" data-value="Opening (AM)" onclick="toggleShiftPill(this)" style="cursor:pointer;padding:9px 22px;border:1px solid #dadce0;border-radius:100px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#3c4043;background:#ffffff;transition:all 0.15s;user-select:none;">Opening (AM)</div>
+        <div class="shift-pill" data-value="Mid" onclick="toggleShiftPill(this)" style="cursor:pointer;padding:9px 22px;border:1px solid #dadce0;border-radius:100px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#3c4043;background:#ffffff;transition:all 0.15s;user-select:none;">Mid</div>
+        <div class="shift-pill" data-value="Closing (PM)" onclick="toggleShiftPill(this)" style="cursor:pointer;padding:9px 22px;border:1px solid #dadce0;border-radius:100px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#3c4043;background:#ffffff;transition:all 0.15s;user-select:none;">Closing (PM)</div>
+      </div>
+      <input type="hidden" name="shift_time_combined" id="shift_time_combined" value=""/>
+      <p style="font-size:12px;color:#5f6368;margin-top:8px;font-style:italic;">💡 Working multiple shifts today? Select all that apply.</p>
     </div>
   </div>
 
@@ -967,10 +974,7 @@
   </div>
 
   <div class="field" style="margin-top:20px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-      <label style="margin-bottom:0;">Sales Notes</label>
-      <a onclick="interceptLink(event)" href="https://www.appsheet.com/start/2d3cbf3a-af41-4f23-92ed-def9dd6f251a?platform=desktop#appName=SPIFsubmission-451227836-25-10-10&vss=H4sIAAAAAAAAA62PQUvEMBCF_4rMOQVbW6q5ygpFdhEqXoyH2WYCwTZZmqm6lPx3E1cRPC4e5w3fx3srvFl67xmHV5DP6-91T0eQsCp4PB5IgVRw6x3PflQgFOxwOoX9Q3d30S_7yYZgvVMQIb6IHw1TALmeZZH_0kWA1eTYGktzVmZBUn3j6Z3hFPxBIQqYFsb9SF8rMmpD5zba8tbrdPO8kACe0QUcOCGdTpr6ygzNZY0FltVNUVctFVibskBdts11pVvTEMSY7MYPSyD9lCaePy03-jig06dOBsdA8RNPvdkI0gEAAA==&view=SPIF%20Submission" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;">⚡ SPIF Submission</a>
-    </div>
+    <label>Sales Notes</label>
     <textarea name="sales_notes" placeholder="Any context around your sales this shift — conversations started, objections, follow up opportunities..."></textarea>
   </div>
   <div class="field">
@@ -1241,6 +1245,24 @@
     if (cb) { cb.checked = !isOpen; item.classList.toggle('checked', !isOpen); }
   }
 
+  function toggleShiftPill(el) {
+    const active = el.getAttribute('data-active') === 'true';
+    if (active) {
+      el.setAttribute('data-active', 'false');
+      el.style.background = '#ffffff';
+      el.style.borderColor = '#dadce0';
+      el.style.color = '#3c4043';
+    } else {
+      el.setAttribute('data-active', 'true');
+      el.style.background = '#1557b0';
+      el.style.borderColor = '#1557b0';
+      el.style.color = '#ffffff';
+    }
+    const selected = [...document.querySelectorAll('.shift-pill[data-active="true"]')].map(p => p.getAttribute('data-value'));
+    document.getElementById('shift_time_combined').value = selected.join(' + ');
+    updateProgress();
+  }
+
   function selectEnergy(el, value) {
     document.querySelectorAll('.energy-btn').forEach(b => b.classList.remove('selected'));
     el.classList.add('selected');
@@ -1295,6 +1317,13 @@
     document.getElementById('shared_notify').style.display = (clientYes || facilitiesYes) ? 'block' : 'none';
   }
 
+  document.querySelectorAll('input[name="lc_pilot_feedback_yn"]').forEach(r => {
+    r.addEventListener('change', () => {
+      const isYes = document.querySelector('input[name="lc_pilot_feedback_yn"]:checked')?.value === 'Yes';
+      document.getElementById('lc_pilot_detail').style.display = isYes ? 'block' : 'none';
+    });
+  });
+
   document.querySelectorAll('input[name="client_issues"]').forEach(r => {
     r.addEventListener('change', () => {
       const isYes = document.querySelector('input[name="client_issues"]:checked')?.value === 'Yes';
@@ -1338,6 +1367,15 @@
   // ── Submit — validate then show confirm modal ────────────
   document.getElementById('shiftForm').addEventListener('submit', function(e) {
     e.preventDefault();
+
+    // Collect multi-shift selection
+    const shiftTimes = [...document.querySelectorAll('input[name="shift_time"]:checked')].map(c => c.value);
+    if (shiftTimes.length === 0) {
+      const firstShift = document.querySelector('input[name="shift_time"]');
+      if (firstShift) firstShift.closest('.notify-item').style.border = '1.5px solid #c5221f';
+      return;
+    }
+    document.getElementById('shift_time_combined').value = shiftTimes.join(' + ');
 
     // Validate studio
     const studio = document.getElementById('studio_select').value;
@@ -1419,6 +1457,7 @@
     payload.submitted_at = new Date().toISOString();
     payload.energy_level = document.getElementById('energy_level').value || '';
     payload.studio = studio;
+    payload.shift_time = document.getElementById('shift_time_combined').value || '';
 
     const axleItems = [...document.querySelectorAll('input[name^="axle_"]:checked')].map(c => c.value);
     const axleLabels = { voicemails_cleared: 'Voicemails Cleared', clients_called_back: 'Clients Called Back', non_sales_texts: 'Non-Sales Texts Addressed', first_class_bucket: 'First Class Bucket Cleared' };
@@ -1454,6 +1493,7 @@
       document.querySelectorAll('input[type="text"], input[type="email"], input[type="date"], select, textarea').forEach(el => {
         if (el.name) data[el.name] = el.value;
       });
+      data['shift_time_combined'] = document.getElementById('shift_time_combined').value || '';
       document.querySelectorAll('input[type="radio"]:checked').forEach(el => { data[el.name] = el.value; });
       document.querySelectorAll('input[type="checkbox"]').forEach(el => {
         data['cb_' + el.value] = el.closest('.check-item') ? el.closest('.check-item').classList.contains('checked') : false;
