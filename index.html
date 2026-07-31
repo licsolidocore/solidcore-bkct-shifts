@@ -1531,6 +1531,10 @@
           if (el.type === 'radio') {
             const r = document.querySelector(`input[name="${key}"][value="${val}"]`);
             if (r) { r.checked = true; r.dispatchEvent(new Event('change')); }
+            if (key === 'lc_pilot_feedback_yn') {
+              const detail = document.getElementById('lc_pilot_detail');
+              if (detail) detail.style.display = val === 'Yes' ? 'block' : 'none';
+            }
           } else {
             el.value = val;
             if (key === 'studio') onStudioChange(val);
