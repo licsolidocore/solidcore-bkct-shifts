@@ -7,6 +7,9 @@
   ║  CHANGELOG                                                   ║
   ╠══════════════════════════════════════════════════════════════╣
   ║  Jul 31, 2026                                                ║
+  ║  • Previous CC note handoff banner — fetches most recent     ║
+  ║    Notes for Next CC from sheet and displays above field     ║
+  ║    when studio is selected (requires doGet in Apps Script)   ║
   ║  • Added Coach Support notes field (always visible)          ║
   ║  • Moved Blockers under Coach Support section                ║
   ║  • Removed Anything Else section                             ║
@@ -948,7 +951,17 @@
     </div>
   </div>
 
-  <div class="field" style="margin-top:20px;">
+  <!-- PREVIOUS CC NOTE BANNER -->
+  <div id="prevCcBanner" style="display:none;margin-top:20px;background:#f0f4ff;border:1px solid #c5d5f5;border-radius:10px;padding:14px 16px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <span style="font-size:13px;font-weight:700;color:#1557b0;letter-spacing:0.03em;">📋 FROM LAST SHIFT</span>
+      <span id="prevCcMeta" style="font-size:12px;color:#5f6368;"></span>
+    </div>
+    <p id="prevCcText" style="font-size:13px;color:#202124;margin:0;white-space:pre-wrap;line-height:1.5;"></p>
+  </div>
+  <!-- END PREVIOUS CC NOTE BANNER -->
+
+  <div class="field" style="margin-top:16px;">
     <label>Notes for Next Core Crew <span class="req">*</span></label>
     <textarea name="next_cc_notes" placeholder="What didn't get done this shift? What should the next crew prioritize? e.g. NAB outreach not completed, supply order still needs to be put away..." required></textarea>
   </div>
@@ -1238,6 +1251,36 @@
         <span class="notify-email">anastasiia.lazarieva@solidcore.co</span>
       </div>`;
     document.getElementById('studioError').classList.remove('visible');
+
+    // Fetch previous CC note for this studio
+    fetchPrevCcNote(studio);
+  }
+
+  // ── Previous CC Note fetch ─────────────────────────────────
+  function fetchPrevCcNote(studio) {
+    const banner = document.getElementById('prevCcBanner');
+    const metaEl = document.getElementById('prevCcMeta');
+    const textEl = document.getElementById('prevCcText');
+
+    // Hide while loading
+    banner.style.display = 'none';
+    metaEl.textContent = '';
+    textEl.textContent = '';
+
+    if (!studio) return;
+
+    fetch(GOOGLE_SCRIPT_URL + '?action=getPrevCcNote&studio=' + encodeURIComponent(studio))
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.note) {
+          metaEl.textContent = data.name + (data.shift ? ' · ' + data.shift : '') + (data.date ? ' · ' + data.date : '');
+          textEl.textContent = data.note;
+          banner.style.display = 'block';
+        }
+      })
+      .catch(() => {
+        // Silently fail — don't block the form
+      });
   }
 
   // ── AXLE toggle ───────────────────────────────────────────
