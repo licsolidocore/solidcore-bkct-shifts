@@ -6,6 +6,15 @@
   ╠══════════════════════════════════════════════════════════════╣
   ║  CHANGELOG                                                   ║
   ╠══════════════════════════════════════════════════════════════╣
+  ║  Aug 13, 2026                                                ║
+  ║  • Scarsdale manager → Rob Carrero (robertc@solidcore.co),   ║
+  ║    replacing Kaitlyn Istona. Westport unchanged.             ║
+  ║    (also update STUDIO_MANAGERS in Apps Script + redeploy)   ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  Aug 03, 2026                                                ║
+  ║  • Removed Core Crew Bingo (July challenge ended)           ║
+  ║    — CSS, banner HTML, modal HTML, JS, onStudioChange refs   ║
+  ╠══════════════════════════════════════════════════════════════╣
   ║  Jul 31, 2026                                                ║
   ║  • Previous CC note handoff banner — fetches most recent     ║
   ║    Notes for Next CC from sheet and displays above field     ║
@@ -627,111 +636,6 @@
   }
   .studio-error.visible { display: block; }
 
-  /* ═══════════════════════════════════════════════════════
-     CORE CREW BINGO — July 2026 (LIC only)
-     DELETE this whole CSS block in August
-     ═══════════════════════════════════════════════════════ */
-  .bng{border:2px solid #1557b0;border-radius:10px;overflow:hidden;margin-bottom:28px;background:#fff;}
-  .bng-header{
-    width:100%;background:#1557b0;color:#fff;border:none;
-    padding:14px 18px;display:flex;align-items:center;justify-content:space-between;
-    cursor:pointer;text-align:left;
-    font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:0.12em;text-transform:uppercase;
-  }
-  .bng-header .bng-sub{display:block;font-family:'Barlow',sans-serif;font-size:11px;font-weight:500;opacity:.8;margin-top:3px;letter-spacing:0.02em;text-transform:none;}
-  .bng-chev{transition:transform .25s;font-size:13px;flex-shrink:0;margin-left:12px;}
-  .bng.open .bng-chev{transform:rotate(180deg);}
-  .bng-body{display:none;padding:16px;}
-  .bng.open .bng-body{display:block;}
-  .bng-loading{text-align:center;color:#5f6368;font-size:13px;padding:24px 0;font-style:italic;}
-
-  .bng-tabs{display:flex;gap:8px;margin-bottom:12px;}
-  .bng-tab{flex:1;padding:9px 0;border-radius:6px;border:1px solid #dadce0;background:#fff;
-    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;
-    color:#5f6368;cursor:pointer;}
-  .bng-tab.active{background:#1557b0;color:#fff;border-color:#1557b0;}
-
-  .bng-picker{position:relative;margin-bottom:12px;}
-  .bng-picker input{
-    width:100%;padding:12px 14px;border:1.5px solid #1557b0;border-radius:8px;
-    font-family:'Barlow',sans-serif;font-size:15px;background:#fff;color:#202124;
-  }
-  .bng-picker-list{
-    position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;
-    border:1px solid #dadce0;border-radius:8px;box-shadow:0 8px 20px rgba(13,71,161,.15);
-    max-height:200px;overflow-y:auto;z-index:50;display:none;
-  }
-  .bng-picker-list.show{display:block;}
-  .bng-picker-item{padding:12px 14px;font-size:14px;cursor:pointer;border-bottom:1px solid #f0f4ff;color:#202124;}
-  .bng-picker-item:last-child{border-bottom:none;}
-  .bng-picker-item:hover{background:#e8f0fe;}
-  .bng-picker-item.add{color:#1557b0;font-weight:700;}
-
-  .bng-status{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
-    background:#e8f0fe;border-radius:8px;padding:11px 14px;margin-bottom:12px;
-    font-size:13.5px;font-weight:600;color:#202124;flex-wrap:wrap;
-  }
-  .bng-status b{color:#1557b0;}
-  .bng-switch{font-size:12px;color:#1557b0;cursor:pointer;font-weight:700;text-decoration:underline;}
-  .bng-blackout{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;color:#c9a13b;letter-spacing:.06em;}
-
-  .bng-locked{text-align:center;padding:26px 12px;color:#5f6368;font-size:13.5px;border:1.5px dashed #dadce0;border-radius:8px;}
-
-  .bng-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-  @media(max-width:600px){ .bng-grid{grid-template-columns:repeat(2,1fr);} }
-  .bng-sq{
-    min-height:96px;border:1.5px solid #1557b0;border-radius:8px;background:#fff;
-    padding:8px 6px;font-size:12.5px;line-height:1.3;font-weight:600;color:#0d47a1;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;cursor:pointer;transition:transform .1s, background .2s;
-  }
-  .bng-sq:active{transform:scale(.95);}
-  .bng-sq.done{background:#e8f0fe;border-color:#1557b0;}
-  .bng-sq.partial{border-style:dashed;background:linear-gradient(to top,#e8f0fe 40%,#fff 40%);}
-  .bng-stamp{margin-top:6px;font-size:10.5px;font-weight:700;background:#1557b0;color:#fff;border-radius:20px;padding:3px 9px;}
-  .bng-stamp.prog{background:#fff;color:#1557b0;border:1.5px solid #1557b0;}
-  .bng-hint{text-align:center;font-size:11.5px;color:#5f6368;margin-top:10px;font-style:italic;}
-
-  .bng-lb-row{display:flex;align-items:center;gap:10px;padding:10px 12px;
-    border:1px solid #dadce0;border-radius:8px;margin-bottom:8px;background:#fff;}
-  .bng-lb-rank{width:26px;height:26px;border-radius:50%;background:#e8f0fe;color:#1557b0;
-    font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;
-    display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .bng-lb-row.first .bng-lb-rank{background:#c9a13b;color:#fff;}
-  .bng-lb-name{font-size:13.5px;font-weight:600;flex:1;color:#202124;}
-  .bng-lb-bar{height:5px;border-radius:3px;background:#e8f0fe;overflow:hidden;margin-top:5px;}
-  .bng-lb-bar i{display:block;height:100%;background:#1557b0;border-radius:3px;}
-  .bng-lb-count{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:#0d47a1;text-align:right;}
-  .bng-lb-count .bng-tix{display:block;font-size:11px;color:#1557b0;font-weight:700;font-family:'Barlow',sans-serif;}
-  .bng-lb-more{
-    width:100%;padding:10px 0;margin-top:2px;border:1.5px dashed #dadce0;border-radius:8px;background:#fff;
-    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;
-    color:#1557b0;cursor:pointer;
-  }
-
-  .bng-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;
-    align-items:center;justify-content:center;padding:24px;z-index:1200;backdrop-filter:blur(2px);}
-  .bng-overlay.show{display:flex;}
-  .bng-modal{background:#fff;border:1px solid #1557b0;border-radius:12px;padding:22px;width:100%;max-width:340px;text-align:center;}
-  .bng-modal h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.06em;text-transform:uppercase;color:#202124;margin-bottom:6px;}
-  .bng-modal p{font-size:13.5px;color:#5f6368;margin-bottom:16px;line-height:1.5;}
-  .bng-modal .bng-warn{font-size:12.5px;color:#a05a00;background:#fdf3e3;border:1px solid #f0dcb4;border-radius:8px;padding:9px 12px;margin-bottom:14px;text-align:left;}
-  .bng-btns{display:flex;gap:8px;flex-wrap:wrap;}
-  .bng-btns button{flex:1;min-width:90px;padding:11px 0;border-radius:6px;
-    font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;
-    cursor:pointer;border:1px solid #dadce0;background:#fff;color:#5f6368;}
-  .bng-btns button.bng-primary{background:#1557b0;border-color:#1557b0;color:#fff;}
-  .bng-btns button.bng-danger{background:#c5221f;border-color:#c5221f;color:#fff;}
-  .bng-toast{
-    position:fixed;bottom:26px;left:50%;transform:translateX(-50%);
-    background:#0d47a1;color:#fff;font-size:13.5px;font-weight:600;
-    padding:11px 20px;border-radius:24px;display:none;z-index:1300;
-    box-shadow:0 6px 16px rgba(13,71,161,.35);white-space:nowrap;
-  }
-  .bng-toast.show{display:block;}
-  /* ═══ END CORE CREW BINGO CSS ═══ */
-
 </style>
 </head>
 <body>
@@ -789,52 +693,6 @@
     <a id="shiftBuddyBtn" href="https://notebooklm.google.com/notebook/7500918c-2c23-4c26-9a48-b48313e6993b" target="_blank" onclick="interceptLink(event)" style="display:none;flex:1;min-width:140px;align-items:center;justify-content:center;gap:8px;background:#1557b0;color:#ffffff;border:2px solid #1557b0;padding:11px 16px;border-radius:8px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">🧑‍💻 Shift Buddy</a>
   </div>
   <p id="shiftBuddyNote" style="display:none;font-size:11px;color:#5f6368;font-style:italic;margin-top:-16px;margin-bottom:24px;">💡 <strong>Shift Buddy:</strong> Must be logged into the studio inbox to access.</p>
-
-  
-  <!-- ═══════════════════════════════════════════════════════
-       CORE CREW BINGO — July 2026 (LIC ONLY)
-       DELETE from here to "END CORE CREW BINGO HTML" in August
-       ═══════════════════════════════════════════════════════ -->
-  <div id="bingoModule" style="display:none;">
-    <div class="bng" id="bngBox">
-      <button type="button" class="bng-header" onclick="bngToggle()">
-        <span>
-          [ Core Crew Bingo ]
-          <span class="bng-sub">July challenge · every bingo line = 1 raffle entry · blackout = bonus studio prize entry</span>
-          <span class="bng-sub">🏆 Prizes: 1 winner per studio receives a [solidcore] track jacket · top core crew in sales per region wins a 5-class pack (announced by your DoS)</span>
-        </span>
-        <span class="bng-chev">▼</span>
-      </button>
-      <div class="bng-body">
-        <div class="bng-loading" id="bngLoading">Loading bingo…</div>
-        <div id="bngContent" style="display:none;">
-          <div class="bng-tabs">
-            <button type="button" class="bng-tab active" id="bngTabBoard" onclick="bngShowView('board')">My Board</button>
-            <button type="button" class="bng-tab" id="bngTabLb" onclick="bngShowView('lb')">Leaderboard</button>
-          </div>
-          <div id="bngBoardView">
-            <div class="bng-picker" id="bngPicker">
-              <input type="text" id="bngNameSearch" placeholder="🔍 Search your name to load your board…" autocomplete="off"/>
-              <div class="bng-picker-list" id="bngPickerList"></div>
-            </div>
-            <div id="bngStatus" class="bng-status" style="display:none;">
-              <span id="bngEntryLine"></span>
-              <span class="bng-switch" onclick="bngSwitchPlayer()">switch player</span>
-            </div>
-            <div id="bngLockedMsg" class="bng-locked">Search and select your name above to load your bingo board 👆</div>
-            <div class="bng-grid" id="bngGrid" style="display:none;"></div>
-            <p class="bng-hint" id="bngBoardHint" style="display:none;">Tap a square to log it · multi-sale squares fill up as you go (1/3 → 2/3 → ✓) · tap again to fix a mistake</p>
-          </div>
-          <div id="bngLbView" style="display:none;">
-            <div id="bngLbRows"></div>
-            <button type="button" class="bng-lb-more" id="bngLbMoreBtn" onclick="bngToggleLb()">View full leaderboard ▾</button>
-            <p class="bng-hint">🎟️ = raffle entries (rows, columns &amp; diagonals) · full blackout earns a bonus studio-prize entry</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- ═══ END CORE CREW BINGO HTML ═══ -->
 
   <div class="section-label">Shift Info</div>
   <div class="field-row">
@@ -1189,7 +1047,7 @@
     'Darien':        { unpaid: 'https://drive.google.com/drive/folders/1EFaDIHUXOaEFUFAh76t0waqkkbS-gGj2', nab: 'https://drive.google.com/drive/folders/1Z5BTsf_N6U136f0j3cMNfNdrMT3yceJR', managers: [{ name: 'Keiry Gomez', email: 'keiry.gomez@solidcore.co' }, { name: 'Patricia Mercado', email: 'patricia.mercado@solidcore.co' }] },
     'West Hartford': { unpaid: 'https://drive.google.com/drive/folders/1PVDQHEu-FQgMbloi24NwD9fyQ57mp6NY', nab: 'https://drive.google.com/drive/folders/1CLABxGoVpm-0mciFMVIxmo3hBquCm_SH', managers: [{ name: 'Gianna', email: 'gianna.damato@solidcore.co' }] },
     'Westport':      { unpaid: 'https://drive.google.com/drive/folders/15PFgGQGr7JbFShtEXmEUu4CMIyikMlzu', nab: 'https://drive.google.com/drive/folders/18pTt7i2tf8hROgGyaLXNSemoUsn-IgQz', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
-    'Scarsdale':     { unpaid: 'https://drive.google.com/drive/folders/1XBuzvpsrxdkSg82-Xgb_ZEQxaP3ZG_Jk', nab: 'https://drive.google.com/drive/folders/1fSXTjgIGkkuNMVBCuwsZqIMc8F7eOEcT', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
+    'Scarsdale':     { unpaid: 'https://drive.google.com/drive/folders/1XBuzvpsrxdkSg82-Xgb_ZEQxaP3ZG_Jk', nab: 'https://drive.google.com/drive/folders/1fSXTjgIGkkuNMVBCuwsZqIMc8F7eOEcT', managers: [{ name: 'Rob Carrero', email: 'robertc@solidcore.co' }] },
   };
 
   function interceptLink(e, linkId) {
@@ -1204,11 +1062,6 @@
   }
 
   function onStudioChange(studio) {
-    // ── CORE CREW BINGO: show for LIC only (DELETE these 3 lines in August) ──
-    const bingoModule = document.getElementById('bingoModule');
-    if (bingoModule) bingoModule.style.display = (studio === 'LIC') ? 'block' : 'none';
-    if (studio === 'LIC') setTimeout(function(){ bngLoad(); }, 0);
-
     // Shift Buddy — LIC only
     const shiftBuddyBtn = document.getElementById('shiftBuddyBtn');
     const shiftBuddyNote = document.getElementById('shiftBuddyNote');
@@ -1411,7 +1264,7 @@
   });
 
   // ── Google Apps Script endpoint ───────────────────────────
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzDvRAFB3E2NhdcwAIcaMO4r47xX1GbCbUMZQzShFEb-X6_8N2fOSwHvFSmX6SElG7-/exec';
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcfU8o7SAPtKct9DGTLx4PAZx-FFzR80aSl3q8OFcNrIxqbhNi77J7E7zzjhPxdu8R/exec';
 
   // ── Submit — validate then show confirm modal ────────────
   document.getElementById('shiftForm').addEventListener('submit', function(e) {
@@ -1678,358 +1531,7 @@
     goalHint.textContent = '💡 Example goal — replace with your own focus for this shift.';
   }
 
-  /* ═══════════════════════════════════════════════════════════
-     CORE CREW BINGO — July 2026 (LIC only)
-     DELETE from here to "END CORE CREW BINGO JS" in August
-     ═══════════════════════════════════════════════════════════ */
-  const BINGO_URL = 'https://script.google.com/macros/s/AKfycbx1chyEZUcP3yed6MMjn-QkeVv9uxlLdHoiMBHNDZpqDmMFUtMkMewsNhy44_TJzfUjag/exec';
-  const BNG_PLAYER_KEY = 'lic_bingo_player_july2026';
-
-  const BNG_TASKS = [
-    "Sell 3 Committed+ Memberships","Book a client into Starter50/Power30","Sell 2 NC2WU in one week","Sell an Unlimited membership",
-    "Pick up a shift in Netgym","Sell 3 MSTH Memberships","Convert class pack → membership","Sell 3 committed memberships",
-    "Upgrade a 4/mo → 8/mo","Clear 5 unpaids in one shift","Sell 2 NC4P in one week","Save a termination attempt",
-    "Dust under all machines during a shift","Classpass → membership","Sell a Bring-a-Buddy special","Upgrade 8/mo → unlimited"
-  ];
-  const BNG_TARGETS = { 0: 3, 2: 2, 5: 3, 7: 3, 10: 2 };
-  const bngTargetOf = i => BNG_TARGETS[i] || 1;
-  const BNG_LINES = [
-    [0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],
-    [0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15],
-    [0,5,10,15],[3,6,9,12]
-  ];
-
-  let bngRoster = [];
-  let bngClaims = {};
-  let bngMe = null;
-  let bngLoaded = false;
-  let bngLoadingNow = false;
-  let bngPendingIdx = null;
-  let bngPendingRegister = null;
-  let bngLbExpanded = false;
-
-  function bngIsDone(claims, i) { return ((claims && claims[i]) || []).length >= bngTargetOf(i); }
-
-  function bngCountEntries(claims) {
-    claims = claims || {};
-    const lines = BNG_LINES.filter(L => L.every(i => bngIsDone(claims, i))).length;
-    const doneCount = BNG_TASKS.map((_, i) => i).filter(i => bngIsDone(claims, i)).length;
-    const blackout = doneCount === 16;
-    return { lines: lines, blackout: blackout, total: lines + (blackout ? 1 : 0), doneCount: doneCount };
-  }
-
-  async function bngPostJson(payload) {
-    const res = await fetch(BINGO_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    });
-    return res.json();
-  }
-
-  async function bngLoad() {
-    if (bngLoaded || bngLoadingNow) return;
-    bngLoadingNow = true;
-    try {
-      const res = await fetch(BINGO_URL);
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error || 'load failed');
-      bngRoster = data.roster || [];
-      bngClaims = data.claims || {};
-      bngLoaded = true;
-      document.getElementById('bngLoading').style.display = 'none';
-      document.getElementById('bngContent').style.display = 'block';
-      const saved = localStorage.getItem(BNG_PLAYER_KEY);
-      if (saved && bngRoster.some(n => n.toLowerCase() === saved.toLowerCase())) {
-        bngSelectPlayer(bngRoster.find(n => n.toLowerCase() === saved.toLowerCase()));
-      }
-    } catch (err) {
-      document.getElementById('bngLoading').textContent = '⚠️ Couldn\'t load bingo — check your connection and refresh.';
-    } finally {
-      bngLoadingNow = false;
-    }
-  }
-
-  function bngToggle() { document.getElementById('bngBox').classList.toggle('open'); }
-
-  function bngShowView(v) {
-    document.getElementById('bngBoardView').style.display = v === 'board' ? 'block' : 'none';
-    document.getElementById('bngLbView').style.display = v === 'lb' ? 'block' : 'none';
-    document.getElementById('bngTabBoard').classList.toggle('active', v === 'board');
-    document.getElementById('bngTabLb').classList.toggle('active', v === 'lb');
-    if (v === 'lb') bngRenderLeaderboard();
-  }
-
-  document.getElementById('bngNameSearch') && document.getElementById('bngNameSearch').addEventListener('input', bngFilterNames);
-  document.getElementById('bngNameSearch') && document.getElementById('bngNameSearch').addEventListener('focus', bngFilterNames);
-  document.addEventListener('click', function(e) {
-    const picker = document.getElementById('bngPicker');
-    if (picker && !picker.contains(e.target)) {
-      const list = document.getElementById('bngPickerList');
-      if (list) list.classList.remove('show');
-    }
-  });
-
-  function bngFilterNames() {
-    const raw = document.getElementById('bngNameSearch').value.trim();
-    const q = raw.toLowerCase();
-    const list = document.getElementById('bngPickerList');
-    list.innerHTML = '';
-    const matches = bngRoster.filter(n => n.toLowerCase().includes(q));
-    matches.forEach(n => {
-      const d = document.createElement('div');
-      d.className = 'bng-picker-item';
-      d.textContent = n;
-      d.onclick = function() { bngSelectPlayer(n); };
-      list.appendChild(d);
-    });
-    if (raw && !bngRoster.some(n => n.toLowerCase() === q)) {
-      const add = document.createElement('div');
-      add.className = 'bng-picker-item add';
-      add.textContent = '➕ Add "' + raw + '" to the roster';
-      add.onclick = function() { bngStartRegister(raw); };
-      list.appendChild(add);
-    }
-    list.classList.toggle('show', list.children.length > 0);
-  }
-
-  function bngStartRegister(name) {
-    bngPendingRegister = { name: name, confirmed: false };
-    document.getElementById('bngPickerList').classList.remove('show');
-    document.getElementById('bngModalTitle').textContent = 'Join the challenge?';
-    document.getElementById('bngModalTask').textContent = 'Add "' + name + '" to the LIC bingo roster. You\'ll pick this name every shift — spell it the way you want it on the leaderboard!';
-    document.getElementById('bngWarn').style.display = 'none';
-    var btn = document.getElementById('bngModalAction');
-    btn.textContent = 'Yes, add me';
-    btn.style.display = 'block';
-    document.getElementById('bngModalUndo').style.display = 'none';
-    document.getElementById('bngOverlay').classList.add('show');
-  }
-
-  async function bngDoRegister() {
-    const btn = document.getElementById('bngModalAction');
-    btn.disabled = true; btn.textContent = 'Adding…';
-    try {
-      const result = await bngPostJson({ action: 'register', name: bngPendingRegister.name, confirmed: bngPendingRegister.confirmed });
-      if (result.ok) {
-        bngRoster.push(result.name);
-        bngCloseModal();
-        bngSelectPlayer(result.name);
-        bngShowToast('Added to the roster — welcome! 🎉');
-      } else if (result.error === 'exists') {
-        bngCloseModal();
-        bngSelectPlayer(result.match);
-        bngShowToast('That name was already registered — board loaded ✓');
-      } else if (result.error === 'similar') {
-        document.getElementById('bngWarnMatch').textContent = result.match;
-        document.getElementById('bngWarn').style.display = 'block';
-        bngPendingRegister.confirmed = true;
-      } else {
-        bngShowToast('⚠️ Couldn\'t register — try again');
-      }
-    } catch (err) {
-      bngShowToast('⚠️ Connection issue — try again');
-    } finally {
-      btn.disabled = false; btn.textContent = 'Yes, add me';
-    }
-  }
-
-  function bngSelectPlayer(name) {
-    bngMe = name;
-    try { localStorage.setItem(BNG_PLAYER_KEY, name); } catch (e) {}
-    document.getElementById('bngPicker').style.display = 'none';
-    document.getElementById('bngPickerList').classList.remove('show');
-    document.getElementById('bngLockedMsg').style.display = 'none';
-    document.getElementById('bngGrid').style.display = 'grid';
-    document.getElementById('bngBoardHint').style.display = 'block';
-    document.getElementById('bngStatus').style.display = 'flex';
-    bngRenderBoard();
-  }
-
-  function bngSwitchPlayer() {
-    bngMe = null;
-    try { localStorage.removeItem(BNG_PLAYER_KEY); } catch (e) {}
-    document.getElementById('bngPicker').style.display = 'block';
-    document.getElementById('bngNameSearch').value = '';
-    document.getElementById('bngGrid').style.display = 'none';
-    document.getElementById('bngBoardHint').style.display = 'none';
-    document.getElementById('bngStatus').style.display = 'none';
-    document.getElementById('bngLockedMsg').style.display = 'block';
-  }
-
-  function bngRenderBoard() {
-    const grid = document.getElementById('bngGrid');
-    grid.innerHTML = '';
-    const myClaims = bngClaims[bngMe] || {};
-    BNG_TASKS.forEach(function(t, i) {
-      const tallies = myClaims[i] || [];
-      const target = bngTargetOf(i);
-      const done = tallies.length >= target;
-      const partial = tallies.length > 0 && !done;
-      const d = document.createElement('div');
-      d.className = 'bng-sq' + (done ? ' done' : '') + (partial ? ' partial' : '');
-      var stamp = '';
-      if (done) {
-        stamp = '<span class="bng-stamp">✓ ' + (target > 1 ? target + '/' + target : tallies[tallies.length - 1]) + '</span>';
-      } else if (partial) {
-        stamp = '<span class="bng-stamp prog">' + tallies.length + '/' + target + '</span>';
-      }
-      d.innerHTML = t + stamp;
-      d.onclick = function() { bngOpenSquare(i); };
-      grid.appendChild(d);
-    });
-    const e = bngCountEntries(myClaims);
-    document.getElementById('bngEntryLine').innerHTML =
-      bngMe + ': ' + e.doneCount + '/16 · <b>🎟️ ×' + e.total + '</b>' +
-      (e.blackout ? ' <span class="bng-blackout">★ BLACKOUT</span>' : '');
-  }
-
-  function bngOpenSquare(i) {
-    bngPendingIdx = i;
-    bngPendingRegister = null;
-    const myClaims = bngClaims[bngMe] || {};
-    const tallies = myClaims[i] || [];
-    const target = bngTargetOf(i);
-    const done = tallies.length >= target;
-    document.getElementById('bngModalTask').textContent = BNG_TASKS[i] +
-      (target > 1 ? ' — logged: ' + tallies.length + '/' + target + (tallies.length ? ' (' + tallies.join(', ') + ')' : '') : '');
-    document.getElementById('bngWarn').style.display = 'none';
-    const btn = document.getElementById('bngModalAction');
-    const undoBtn = document.getElementById('bngModalUndo');
-    if (tallies.length === 0) {
-      document.getElementById('bngModalTitle').textContent = target > 1 ? 'Log one toward this square?' : 'Claim this square?';
-      btn.textContent = target > 1 ? 'Log it +1' : 'Claim it ✓';
-      btn.style.display = 'block';
-      undoBtn.style.display = 'none';
-    } else {
-      document.getElementById('bngModalTitle').textContent = done ? 'Square complete' : 'Update this square';
-      btn.textContent = 'Log another +1';
-      btn.style.display = done ? 'none' : 'block';
-      undoBtn.style.display = 'block';
-    }
-    document.getElementById('bngOverlay').classList.add('show');
-  }
-
-  function bngCloseModal() {
-    document.getElementById('bngOverlay').classList.remove('show');
-    document.getElementById('bngWarn').style.display = 'none';
-    document.getElementById('bngModalAction').disabled = false;
-    bngPendingRegister = null;
-  }
-
-  function bngModalConfirm() {
-    if (bngPendingRegister) { bngDoRegister(); return; }
-    bngDoClaim();
-  }
-
-  async function bngDoClaim() {
-    const i = bngPendingIdx;
-    const before = bngCountEntries(bngClaims[bngMe]).total;
-    if (!bngClaims[bngMe]) bngClaims[bngMe] = {};
-    if (!bngClaims[bngMe][i]) bngClaims[bngMe][i] = [];
-    const now = new Date();
-    const dateStr = (now.getMonth() + 1) + '/' + now.getDate();
-    bngClaims[bngMe][i].push(dateStr);
-    bngCloseModal();
-    bngRenderBoard();
-    const after = bngCountEntries(bngClaims[bngMe]);
-    if (after.total > before) {
-      bngShowToast(after.blackout ? '★ BLACKOUT! Bonus entry earned!' : '🎟️ BINGO! Raffle entry earned!');
-    } else if (bngIsDone(bngClaims[bngMe], i)) {
-      bngShowToast('Square complete! ✓');
-    } else {
-      bngShowToast('Logged ' + bngClaims[bngMe][i].length + '/' + bngTargetOf(i));
-    }
-    try {
-      const result = await bngPostJson({ action: 'claim', name: bngMe, square: i, task: BNG_TASKS[i] });
-      if (!result.ok) throw new Error(result.error);
-    } catch (err) {
-      bngClaims[bngMe][i].pop();
-      if (bngClaims[bngMe][i].length === 0) delete bngClaims[bngMe][i];
-      bngRenderBoard();
-      bngShowToast('⚠️ Didn\'t save — check connection & tap again');
-    }
-  }
-
-  async function bngUndo() {
-    const i = bngPendingIdx;
-    const tallies = (bngClaims[bngMe] && bngClaims[bngMe][i]) || [];
-    if (tallies.length === 0) { bngCloseModal(); return; }
-    const removed = tallies.pop();
-    if (tallies.length === 0) delete bngClaims[bngMe][i];
-    bngCloseModal();
-    bngRenderBoard();
-    bngShowToast('Last entry removed');
-    try {
-      const result = await bngPostJson({ action: 'undo', name: bngMe, square: i });
-      if (!result.ok) throw new Error(result.error);
-    } catch (err) {
-      if (!bngClaims[bngMe]) bngClaims[bngMe] = {};
-      if (!bngClaims[bngMe][i]) bngClaims[bngMe][i] = [];
-      bngClaims[bngMe][i].push(removed);
-      bngRenderBoard();
-      bngShowToast('⚠️ Undo didn\'t save — check connection & try again');
-    }
-  }
-
-  function bngRenderLeaderboard() {
-    const rows = document.getElementById('bngLbRows');
-    const players = bngRoster.map(function(n) {
-      return { name: n, e: bngCountEntries(bngClaims[n]) };
-    }).sort(function(a, b) {
-      return (b.e.total - a.e.total) || (b.e.doneCount - a.e.doneCount) || a.name.localeCompare(b.name);
-    });
-    const visible = bngLbExpanded ? players : players.slice(0, 5);
-    rows.innerHTML = '';
-    if (players.length === 0) {
-      rows.innerHTML = '<p class="bng-hint">No one has joined yet — be the first! Head to My Board and add your name.</p>';
-    }
-    visible.forEach(function(p, idx) {
-      const d = document.createElement('div');
-      d.className = 'bng-lb-row' + (idx === 0 ? ' first' : '');
-      d.innerHTML =
-        '<div class="bng-lb-rank">' + (idx + 1) + '</div>' +
-        '<div class="bng-lb-name">' + p.name +
-          '<div class="bng-lb-bar"><i style="width:' + Math.round(p.e.doneCount / 16 * 100) + '%"></i></div>' +
-        '</div>' +
-        '<div class="bng-lb-count">' + p.e.doneCount + '/16' +
-          '<span class="bng-tix">' + (p.e.total ? '🎟️ ×' + p.e.total : '—') + '</span>' +
-          (p.e.blackout ? '<span class="bng-blackout">★ BLACKOUT</span>' : '') +
-        '</div>';
-      rows.appendChild(d);
-    });
-    const btn = document.getElementById('bngLbMoreBtn');
-    btn.style.display = players.length > 5 ? 'block' : 'none';
-    btn.textContent = bngLbExpanded ? 'Show top 5 ▴' : 'View full leaderboard (' + players.length + ') ▾';
-  }
-
-  function bngToggleLb() { bngLbExpanded = !bngLbExpanded; bngRenderLeaderboard(); }
-
-  function bngShowToast(msg) {
-    const t = document.getElementById('bngToast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(function() { t.classList.remove('show'); }, 2600);
-  }
-  /* ═══ END CORE CREW BINGO JS ═══ */
-
 </script>
-
-<!-- ═══ CORE CREW BINGO — claim/undo/register modal + toast (DELETE IN AUGUST) ═══ -->
-<div class="bng-overlay" id="bngOverlay">
-  <div class="bng-modal">
-    <h3 id="bngModalTitle"></h3>
-    <p id="bngModalTask"></p>
-    <div class="bng-warn" id="bngWarn" style="display:none;">Looks like <b id="bngWarnMatch"></b> is already on the roster — is that you? If so, cancel and select that name instead. If you're a different person, tap "Yes, add me" again.</div>
-    <div class="bng-btns">
-      <button type="button" onclick="bngCloseModal()">Cancel</button>
-      <button type="button" class="bng-danger" id="bngModalUndo" onclick="bngUndo()" style="display:none;">Remove last −1</button>
-      <button type="button" class="bng-primary" id="bngModalAction" onclick="bngModalConfirm()"></button>
-    </div>
-  </div>
-</div>
-<div class="bng-toast" id="bngToast"></div>
-<!-- ═══ END CORE CREW BINGO MODAL ═══ -->
 
 </body>
 </html>
