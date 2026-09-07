@@ -18,6 +18,10 @@
   ║  • Added LIC-only trash-day check (Tue/Wed/Sat) — Y/N:       ║
   ║    bins returned by opening coach. Folds into Checklist      ║
   ║    column as "Trash/Recycle Bins Returned: Yes/No"          ║
+  ║  • Added Greenpoint studio (9th) — mgr Kaitlyn Istona,       ║
+  ║    tab code GP. Tracker links = PLACEHOLDERS, need real URLs ║
+  ║    (also added to STUDIO_MANAGERS + studioShort in Apps      ║
+  ║    Script — requires redeploy)                              ║
   ╠══════════════════════════════════════════════════════════════╣
   ║  Aug 13, 2026                                                ║
   ║  • Scarsdale manager → Rob Carrero (robertc@solidcore.co),   ║
@@ -694,6 +698,7 @@
       <option value="West Hartford">West Hartford</option>
       <option value="Westport">Westport</option>
       <option value="Scarsdale">Scarsdale</option>
+      <option value="Greenpoint">Greenpoint</option>
     </select>
     <div class="studio-error" id="studioError">⚠️ Please select your studio before submitting.</div>
   </div>
@@ -808,7 +813,7 @@
         <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <span class="check-text">Unpaid class tomorrow</span>
       </div>
-      <a id="unpaidTrackerLink" onclick="interceptLink(event)" href="https://drive.google.com/drive/folders/1THgn7AQZvH14rVbHlxOqjnmx72FD6cPD" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📋 Unpaid Tracker</a>
+      <a id="unpaidTrackerLink" onclick="interceptTracker(event)" href="https://drive.google.com/drive/folders/1THgn7AQZvH14rVbHlxOqjnmx72FD6cPD" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📋 Unpaid Tracker</a>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
       <div class="check-item" onclick="toggleCheck(this)" style="flex:1;margin-bottom:0;">
@@ -816,7 +821,7 @@
         <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <span class="check-text">Negative account balance outreach</span>
       </div>
-      <a id="nabTrackerLink" onclick="interceptLink(event)" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📊 NAB Tracker</a>
+      <a id="nabTrackerLink" onclick="interceptTracker(event)" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📊 NAB Tracker</a>
     </div>
     <div class="check-item" onclick="toggleCheck(this)">
       <input type="checkbox" name="checklist" value="supply_order"/>
@@ -1090,6 +1095,7 @@
     'West Hartford': { unpaid: 'https://drive.google.com/drive/folders/1PVDQHEu-FQgMbloi24NwD9fyQ57mp6NY', nab: 'https://drive.google.com/drive/folders/1CLABxGoVpm-0mciFMVIxmo3hBquCm_SH', managers: [{ name: 'Gianna', email: 'gianna.damato@solidcore.co' }] },
     'Westport':      { unpaid: 'https://drive.google.com/drive/folders/15PFgGQGr7JbFShtEXmEUu4CMIyikMlzu', nab: 'https://drive.google.com/drive/folders/18pTt7i2tf8hROgGyaLXNSemoUsn-IgQz', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
     'Scarsdale':     { unpaid: 'https://drive.google.com/drive/folders/1XBuzvpsrxdkSg82-Xgb_ZEQxaP3ZG_Jk', nab: 'https://drive.google.com/drive/folders/1fSXTjgIGkkuNMVBCuwsZqIMc8F7eOEcT', managers: [{ name: 'Rob Carrero', email: 'robertc@solidcore.co' }] },
+    'Greenpoint':    { unpaid: 'COMING_SOON', nab: 'COMING_SOON', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
   };
 
   function interceptLink(e, linkId) {
@@ -1100,6 +1106,18 @@
       document.getElementById('studioError').classList.add('visible');
       document.getElementById('studioError').textContent = '⚠️ Please select your studio first to access this link.';
       setTimeout(() => document.getElementById('studioError').classList.remove('visible'), 3000);
+    }
+  }
+
+  // Tracker buttons: same studio-required check, plus a "coming soon" popup
+  // for studios whose tracker URL is still the COMING_SOON sentinel.
+  function interceptTracker(e) {
+    const studio = document.getElementById('studio_select').value;
+    if (!studio) { interceptLink(e); return; }
+    const href = e.currentTarget.getAttribute('href');
+    if (!href || href === 'COMING_SOON' || href === '#') {
+      e.preventDefault();
+      alert('📋 Tracker coming soon for ' + studio + '!');
     }
   }
 
