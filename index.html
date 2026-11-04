@@ -6,6 +6,26 @@
   ╠══════════════════════════════════════════════════════════════╣
   ║  CHANGELOG                                                   ║
   ╠══════════════════════════════════════════════════════════════╣
+  ║  Nov 04, 2026                                                ║
+  ║  • Notify list now reads Studio + Leader + Email live from   ║
+  ║    the BK/CT POC sheet (needs Code.gs getLeaders action).    ║
+  ║    STUDIO_CONFIG managers kept only as a backup.             ║
+  ║  • Only CHECKED names are emailed (was emailing everyone)    ║
+  ║  • Anastasiia shows for Williamsburg only                    ║
+  ║  • Shift Buddy hidden for LIC (SHOW_SHIFT_BUDDY = false)     ║
+  ║  • Shift checklist reorganized under the Core Crew 5:        ║
+  ║    Prep the Space, Review the Roster, Greet Tour & Hand Off, ║
+  ║    Clean & Restock, Account & Membership Needs               ║
+  ║  • New item: Prep the Space (lights, music, amenities)       ║
+  ║  • AXLE dropdown replaced with one item + bucket list        ║
+  ║  • Inbox item renamed to Zendesk tickets                     ║
+  ║  • Unpaid class outreach shows the current pay period to     ║
+  ║    prioritize (2026 payroll calendar, ends 12/15/26)         ║
+  ║  • Brand Standards item reworded, Checklist button removed   ║
+  ║  • Photos / Videos of Facilities Issue section removed       ║
+  ║  • Report labels renamed to match Core Crew 5 (Code.gs       ║
+  ║    compliance report accepts old + new labels)               ║
+  ╠══════════════════════════════════════════════════════════════╣
   ║  Sep 05, 2026                                                ║
   ║  • Added "Check class roster & complete milestone board"    ║
   ║    as first checklist item (all studios) + Class Roster      ║
@@ -360,6 +380,19 @@
   .check-item.checked .check-box svg { display: block; }
   .check-text { font-size: 14px; font-weight: 500; color: #3c4043; line-height: 1.3; }
   .check-item.checked .check-text { color: var(--white); }
+
+
+  /* CORE CREW 5 GROUPS */
+  .cc5-group { background:#ffffff; border:1px solid #dadce0; border-radius:10px; padding:14px 14px 6px; margin-bottom:14px; }
+  .cc5-group .check-item, .cc5-group > div[style*="display:flex"] { margin-bottom:8px; }
+  .cc5-head { display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; }
+  .cc5-num { width:26px; height:26px; border-radius:50%; background:#1557b0; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:15px; flex-shrink:0; }
+  .cc5-titles { flex:1; min-width:0; }
+  .cc5-title { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:16px; letter-spacing:0.04em; text-transform:uppercase; color:#202124; line-height:1.2; }
+  .cc5-desc { font-size:12px; color:#5f6368; line-height:1.45; margin-top:3px; }
+  .cc5-chip { background:#0b0b0b; color:#fff; font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; padding:5px 10px; border-radius:6px; white-space:nowrap; flex-shrink:0; }
+  .cc5-opt { display:block; font-size:11px; font-weight:400; color:#80868b; margin-top:2px; }
+  @media (max-width:520px){ .cc5-head{flex-wrap:wrap} .cc5-chip{margin-left:36px} }
 
   /* RADIO PILLS */
   .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -750,68 +783,105 @@
   <div class="section-label">Shift Checklist — Required Before End of Shift</div>
   <p style="font-size:12px;color:#5f6368;margin:-8px 0 16px;font-style:italic;">Please only check what you were able to complete this shift.</p>
   <div class="checklist" id="checklist">
+    <!-- CORE CREW 5 · Nov 2026 -->
+    <div class="cc5-group">
+    <div class="cc5-head">
+      <div class="cc5-num">1</div>
+      <div class="cc5-titles"><div class="cc5-title">Prep the Space</div><div class="cc5-desc">Get the studio ready before clients arrive.</div></div>
+      <span class="cc5-chip">Always</span>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" name="checklist" value="prep_space"/>
+      <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="check-text">Lights, music, diffuser &amp; amenities client-ready</span>
+    </div>
+    <!-- LIC-only · trash-pickup days (Tue/Wed/Sat): bins returned Y/N -->
+    <div id="trashCheckBlock" style="display:none;margin-top:0;background:#ffffff;border:1px solid #dadce0;border-radius:6px;padding:14px 16px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#1557b0;margin-bottom:8px;">🗑️ Trash Day Check — LIC</div>
+      <span class="check-text" style="display:block;color:#3c4043;margin-bottom:12px;">Trash/recycle picked up &amp; opening block coach brought the bins back into the studio?</span>
+      <div class="radio-group">
+        <label class="radio-pill"><input type="radio" name="trash_bins_returned" value="Yes"/><span>Yes</span></label>
+        <label class="radio-pill"><input type="radio" name="trash_bins_returned" value="No"/><span>No</span></label>
+      </div>
+      <div id="trashNoMsg" style="display:none;margin-top:12px;background:#fcebeb;border:1px solid #f4b8b8;border-left:3px solid #c5221f;border-radius:6px;padding:12px 14px;">
+        <p style="font-size:13px;color:#a32d2d;margin:0;line-height:1.5;">⚠️ Please collaborate with the coach to bring the bins or Recycle (tied up boxes) back to the storage room before 9am, and contact your HCCM or POC to reschedule pickup.</p>
+      </div>
+    </div>
+    </div>
+    <div class="cc5-group">
+    <div class="cc5-head">
+      <div class="cc5-num">2</div>
+      <div class="cc5-titles"><div class="cc5-title">Review the Roster for New &amp; Milestone Clients</div><div class="cc5-desc">Know who's new, visiting, or hitting a milestone so you're ready for their questions.</div></div>
+      <span class="cc5-chip">Before Class</span>
+    </div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
       <div class="check-item" onclick="toggleCheck(this)" style="flex:1;margin-bottom:0;">
         <input type="checkbox" name="checklist" value="class_roster_milestone"/>
         <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="check-text">Check class roster &amp; complete milestone board</span>
+        <span class="check-text">Roster reviewed &amp; milestone boards ready</span>
       </div>
       <a href="https://schedule.solidcore.co/coach-login?redirect=class-info" target="_blank" onclick="interceptLink(event)" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📋 Class Roster</a>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-      <div class="check-item" onclick="toggleCheck(this)" style="flex:1;margin-bottom:0;">
-        <input type="checkbox" name="checklist" value="brand_standards"/>
-        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="check-text">Brand Standards — Restock alarm reset, studio restocked every 3 hours, iPad checklist completed</span>
-      </div>
-      <a href="https://drive.google.com/file/d/1iKVEEwHOMLZrUTFjQpnol8AjPeK1Vbih/view?usp=sharing" target="_blank" onclick="interceptLink(event)" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📋 Checklist</a>
+    </div>
+    <div class="cc5-group">
+    <div class="cc5-head">
+      <div class="cc5-num">3</div>
+      <div class="cc5-titles"><div class="cc5-title">Greet, Tour &amp; Hand Off</div><div class="cc5-desc">Make every client feel welcomed and set up for class.</div></div>
+      <span class="cc5-chip">All Clients</span>
     </div>
     <div class="check-item" onclick="toggleCheck(this)">
       <input type="checkbox" name="checklist" value="stop_drop_checkin"/>
       <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <span class="check-text">STOP, DROP, CHECK-IN — Please stand up for every check-in (get waivers signed)</span>
+      <span class="check-text">Stand / open door for every check-in, waivers signed, handed off to coach</span>
+    </div>
+    </div>
+    <div class="cc5-group">
+    <div class="cc5-head">
+      <div class="cc5-num">4</div>
+      <div class="cc5-titles"><div class="cc5-title">Clean &amp; Restock the Transition</div><div class="cc5-desc">Lobby, floor, and restrooms ready for whoever walks in next.</div></div>
+      <span class="cc5-chip">Priority</span>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" name="checklist" value="brand_standards"/>
+      <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="check-text">Reset / restock studio, checklist on iPad wallpaper</span>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox" name="checklist" value="supply_order"/>
+      <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="check-text">Studio supply order unpacked &amp; put away <span class="cc5-opt">Arrives first week of the month</span></span>
+    </div>
+    </div>
+    <div class="cc5-group">
+    <div class="cc5-head">
+      <div class="cc5-num">5</div>
+      <div class="cc5-titles"><div class="cc5-title">Handle Account &amp; Membership Needs</div><div class="cc5-desc">Support client needs, membership changes, and billing at the front desk.</div></div>
+      <span class="cc5-chip">As Needed</span>
     </div>
     <div class="check-item" onclick="toggleCheck(this)">
       <input type="checkbox" name="checklist" value="inbox"/>
       <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <span class="check-text">Studio inbox cleared &amp; responded to</span>
+      <span class="check-text">Zendesk tickets cleared &amp; responded to</span>
     </div>
-    <!-- AXLE expandable -->
+    <!-- AXLE (single item, buckets listed underneath · Nov 2026) -->
     <div style="display:flex;align-items:center;gap:8px;">
-      <div class="check-item axle-parent" onclick="toggleAxle(this)" style="flex:1;margin-bottom:0;">
+      <div class="check-item" onclick="toggleCheck(this)" style="flex:1;margin-bottom:0;">
         <input type="checkbox" name="checklist" value="axle" id="axle_main"/>
         <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="check-text">AXLE <span class="axle-toggle-hint" id="axleHint">▾ tap to expand</span></span>
+        <span class="check-text">AXLE
+          <span class="cc5-opt">Voicemails responded to</span>
+          <span class="cc5-opt">Clear the following buckets: Expiring Credits, Membership at Risk, Bought / Not Booked, No Show Clients, 1st Class Tomorrow</span>
+        </span>
       </div>
       <a href="https://portal.axl3.io/login.php" target="_blank" onclick="interceptLink(event)" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">AXLE Portal</a>
-    </div>
-    <div class="axle-sub" id="axleSub" style="display:none;">
-      <div class="check-item sub-item" onclick="toggleCheck(this)">
-        <input type="checkbox" name="axle_voicemail" value="voicemails_cleared"/>
-        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="check-text">Voicemails cleared</span>
-      </div>
-      <div class="check-item sub-item" onclick="toggleCheck(this)">
-        <input type="checkbox" name="axle_callbacks" value="clients_called_back"/>
-        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="check-text">Clients called back / emailed</span>
-      </div>
-      <div class="check-item sub-item" onclick="toggleCheck(this)">
-        <input type="checkbox" name="axle_texts" value="non_sales_texts"/>
-        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="check-text">Non-Sales Team texts addressed</span>
-      </div>
-      <div class="check-item sub-item" onclick="toggleCheck(this)">
-        <input type="checkbox" name="axle_first_class" value="first_class_bucket"/>
-        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="check-text">"First Class Tomorrow" bucket cleared</span>
-      </div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
       <div class="check-item" onclick="toggleCheck(this)" style="flex:1;margin-bottom:0;">
         <input type="checkbox" name="checklist" value="unpaid_class"/>
         <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="check-text">Unpaid class tomorrow</span>
+        <span class="check-text">Unpaid class outreach
+          <span class="cc5-opt" id="unpaidWindow"></span>
+        </span>
       </div>
       <a id="unpaidTrackerLink" onclick="interceptTracker(event)" href="https://drive.google.com/drive/folders/1THgn7AQZvH14rVbHlxOqjnmx72FD6cPD" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📋 Unpaid Tracker</a>
     </div>
@@ -823,23 +893,6 @@
       </div>
       <a id="nabTrackerLink" onclick="interceptTracker(event)" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📊 NAB Tracker</a>
     </div>
-    <div class="check-item" onclick="toggleCheck(this)">
-      <input type="checkbox" name="checklist" value="supply_order"/>
-      <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <span class="check-text">Studio supply order — unpack &amp; put away (arrives first week of the month)</span>
-    </div>
-
-    <!-- LIC-only · trash-pickup days (Tue/Wed/Sat): bins returned Y/N -->
-    <div id="trashCheckBlock" style="display:none;margin-top:8px;background:#ffffff;border:1px solid #dadce0;border-radius:6px;padding:14px 16px;">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#1557b0;margin-bottom:8px;">🗑️ Trash Day Check — LIC</div>
-      <span class="check-text" style="display:block;color:#3c4043;margin-bottom:12px;">Trash/recycle picked up &amp; opening block coach brought the bins back into the studio?</span>
-      <div class="radio-group">
-        <label class="radio-pill"><input type="radio" name="trash_bins_returned" value="Yes"/><span>Yes</span></label>
-        <label class="radio-pill"><input type="radio" name="trash_bins_returned" value="No"/><span>No</span></label>
-      </div>
-      <div id="trashNoMsg" style="display:none;margin-top:12px;background:#fcebeb;border:1px solid #f4b8b8;border-left:3px solid #c5221f;border-radius:6px;padding:12px 14px;">
-        <p style="font-size:13px;color:#a32d2d;margin:0;line-height:1.5;">⚠️ Please collaborate with the coach to bring the bins or Recycle (tied up boxes) back to the storage room before 9am, and contact your HCCM or POC to reschedule pickup.</p>
-      </div>
     </div>
   </div>
 
@@ -950,11 +1003,6 @@
         View POC Sheet — if above leaders are OOO
       </a>
     </div>
-  </div>
-
-  <div class="field" id="facilities_media" style="display:none;">
-    <label>Photos / Videos of Facilities Issue</label>
-    <p style="font-size:13px;color:#5f6368;line-height:1.6;background:#f8f9fa;border:1px solid #dadce0;border-radius:6px;padding:14px 16px;">📸 Please text via WhatsApp or email any photos or videos directly to your studio manager or point of contact so they can submit a Fexa report.</p>
   </div>
 
   <div class="section-label">Shift Goals — Did You Achieve It?</div>
@@ -1087,13 +1135,13 @@
 
   // ── Studio config (extend with per-studio links & contacts later) ──
   const STUDIO_CONFIG = {
-    'LIC':           { unpaid: 'https://drive.google.com/drive/u/2/folders/1THgn7AQZvH14rVbHlxOqjnmx72FD6cPD', nab: 'https://drive.google.com/drive/folders/121UHDNK0D0qp8_kI_u4TOQ4AjXxzY-h_', managers: [{ name: 'Juan Zapata', email: 'juan.zapata@solidcore.co' }] },
+    'LIC':           { unpaid: 'https://drive.google.com/drive/u/2/folders/1THgn7AQZvH14rVbHlxOqjnmx72FD6cPD', nab: 'https://drive.google.com/drive/folders/121UHDNK0D0qp8_kI_u4TOQ4AjXxzY-h_', managers: [{ name: 'Kate', email: 'kathleen.martino@solidcore.co' }] },
     'Williamsburg':  { unpaid: 'https://drive.google.com/drive/folders/1VG9gkF_M2YHlTvjzrrPk3ZHAejjq82wk', nab: 'https://drive.google.com/drive/folders/1vzuZuUylJTqeS3zwnecGiREmXp3V5wVS', managers: [{ name: 'Kate Martino', email: 'kathleen.martino@solidcore.co' }] },
     'DUMBO':         { unpaid: 'https://drive.google.com/drive/folders/1-mbkTpXWCnYbN9n08wQ0QcWtin1502MA', nab: 'https://drive.google.com/drive/folders/1mM5-2Xhy27mPpjpXwIvYn_ydiBhm_6Zf', managers: [{ name: 'Alicia Thwaites', email: 'alicia.thwaites@solidcore.co' }] },
-    'DTBK':          { unpaid: 'https://drive.google.com/drive/folders/1NOCunak1S1X4JVVqUsXs4TVcy6PTrigz', nab: 'https://drive.google.com/drive/folders/10xSPOrrlHVK-JCxGGK4ZK6zcjZANaGCi', managers: [{ name: 'Isabel Daly', email: 'isabel.daly@solidcore.co' }] },
-    'Darien':        { unpaid: 'https://drive.google.com/drive/folders/1EFaDIHUXOaEFUFAh76t0waqkkbS-gGj2', nab: 'https://drive.google.com/drive/folders/1Z5BTsf_N6U136f0j3cMNfNdrMT3yceJR', managers: [{ name: 'Keiry Gomez', email: 'keiry.gomez@solidcore.co' }, { name: 'Patricia Mercado', email: 'patricia.mercado@solidcore.co' }] },
+    'DTBK':          { unpaid: 'https://drive.google.com/drive/folders/1NOCunak1S1X4JVVqUsXs4TVcy6PTrigz', nab: 'https://drive.google.com/drive/folders/10xSPOrrlHVK-JCxGGK4ZK6zcjZANaGCi', managers: [{ name: 'Alicia', email: 'alicia.thwaites@solidcore.co' }] },
+    'Darien':        { unpaid: 'https://drive.google.com/drive/folders/1EFaDIHUXOaEFUFAh76t0waqkkbS-gGj2', nab: 'https://drive.google.com/drive/folders/1Z5BTsf_N6U136f0j3cMNfNdrMT3yceJR', managers: [{ name: 'Patty', email: 'patricia.mercado@solidcore.co' }, { name: 'Keiry', email: 'keiry.gomez@solidcore.co' }] },
     'West Hartford': { unpaid: 'https://drive.google.com/drive/folders/1PVDQHEu-FQgMbloi24NwD9fyQ57mp6NY', nab: 'https://drive.google.com/drive/folders/1CLABxGoVpm-0mciFMVIxmo3hBquCm_SH', managers: [{ name: 'Gianna', email: 'gianna.damato@solidcore.co' }] },
-    'Westport':      { unpaid: 'https://drive.google.com/drive/folders/15PFgGQGr7JbFShtEXmEUu4CMIyikMlzu', nab: 'https://drive.google.com/drive/folders/18pTt7i2tf8hROgGyaLXNSemoUsn-IgQz', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
+    'Westport':      { unpaid: 'https://drive.google.com/drive/folders/15PFgGQGr7JbFShtEXmEUu4CMIyikMlzu', nab: 'https://drive.google.com/drive/folders/18pTt7i2tf8hROgGyaLXNSemoUsn-IgQz', managers: [{ name: 'Mikaela', email: 'mikaela.bigelow@solidcore.co' }] },
     'Scarsdale':     { unpaid: 'https://drive.google.com/drive/folders/1XBuzvpsrxdkSg82-Xgb_ZEQxaP3ZG_Jk', nab: 'https://drive.google.com/drive/folders/1fSXTjgIGkkuNMVBCuwsZqIMc8F7eOEcT', managers: [{ name: 'Rob Carrero', email: 'robertc@solidcore.co' }] },
     'Greenpoint':    { unpaid: 'COMING_SOON', nab: 'COMING_SOON', managers: [{ name: 'Kaitlyn Istona', email: 'kaitlyn.istona@solidcore.co' }] },
   };
@@ -1122,11 +1170,13 @@
   }
 
   function onStudioChange(studio) {
-    // Shift Buddy — LIC only
+    // Shift Buddy — LIC only. Hidden for now (Nov 2026): set SHOW_SHIFT_BUDDY to true to bring it back
+    const SHOW_SHIFT_BUDDY = false;
+    const showBuddy = SHOW_SHIFT_BUDDY && studio === 'LIC';
     const shiftBuddyBtn = document.getElementById('shiftBuddyBtn');
     const shiftBuddyNote = document.getElementById('shiftBuddyNote');
-    if (shiftBuddyBtn) shiftBuddyBtn.style.display = (studio === 'LIC') ? 'inline-flex' : 'none';
-    if (shiftBuddyNote) shiftBuddyNote.style.display = (studio === 'LIC') ? 'block' : 'none';
+    if (shiftBuddyBtn) shiftBuddyBtn.style.display = showBuddy ? 'inline-flex' : 'none';
+    if (shiftBuddyNote) shiftBuddyNote.style.display = showBuddy ? 'block' : 'none';
 
     updateTrashCheck();
 
@@ -1135,40 +1185,79 @@
     // Update tracker links
     document.getElementById('unpaidTrackerLink').href = config.unpaid;
     document.getElementById('nabTrackerLink').href = config.nab;
-    // Rebuild notify list
-    const notifyList = document.getElementById('notifyList');
-    notifyList.innerHTML = '';
-    if (config.managers.length === 0) {
-      notifyList.innerHTML = '<p style="font-size:13px;color:#5f6368;font-style:italic;">No manager assigned yet — check POC sheet below.</p>';
-    } else {
-      config.managers.forEach(m => {
-        notifyList.innerHTML += `
-          <div class="notify-item locked">
-            <input type="checkbox" name="notify_issue" value="${m.email}" checked disabled/>
-            <div class="notify-box"><svg width="10" height="8" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span class="notify-name">${m.name}</span>
-            <span class="notify-email">${m.email}</span>
-          </div>`;
-      });
-    }
-    // Always add Inger and Anastasiia as optional
-    notifyList.innerHTML += `
-      <div class="notify-item" onclick="toggleNotify(this)">
-        <input type="checkbox" name="notify_issue" value="inger@solidcore.co"/>
-        <div class="notify-box"><svg width="10" height="8" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="notify-name">Inger</span>
-        <span class="notify-email">inger@solidcore.co</span>
-      </div>
-      <div class="notify-item" onclick="toggleNotify(this)">
-        <input type="checkbox" name="notify_issue" value="anastasiia.lazarieva@solidcore.co"/>
-        <div class="notify-box"><svg width="10" height="8" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="notify-name">Anastasiia</span>
-        <span class="notify-email">anastasiia.lazarieva@solidcore.co</span>
-      </div>`;
+    // Rebuild notify list (leaders come from the POC sheet, see renderNotify)
+    renderNotify(studio);
     document.getElementById('studioError').classList.remove('visible');
 
     // Fetch previous CC note for this studio
     fetchPrevCcNote(studio);
+  }
+
+  // ── Notify list from POC sheet ─────────────────────────────
+  // Studio + Leader Name + Email are read live from the BK/CT Point of
+  // Contact sheet via the Apps Script (?action=getLeaders). Edit the POC
+  // sheet and the form follows. STUDIO_CONFIG managers are only a backup
+  // used if the sheet can't be reached.
+  const POC_STUDIO_NAMES = {
+    'LIC': 'LONG ISLAND CITY', 'Williamsburg': 'WILLIAMSBURG', 'DUMBO': 'DUMBO',
+    'DTBK': 'DOWNTOWN BROOKLYN', 'Darien': 'DARIEN', 'West Hartford': 'WEST HARTFORD',
+    'Westport': 'WESTPORT', 'Scarsdale': 'SCARSDALE', 'Greenpoint': 'GREENPOINT'
+  };
+  const POC_AREA_ROW = 'BK/CT';
+  let pocLeaders = null;
+
+  function loadPocLeaders() {
+    fetch(GOOGLE_SCRIPT_URL + '?action=getLeaders')
+      .then(r => r.json())
+      .then(data => {
+        if (!data || !data.leaders) return;
+        pocLeaders = data.leaders;
+        const current = document.getElementById('studio_select').value;
+        if (current) renderNotify(current);
+      })
+      .catch(() => { /* keep backup list */ });
+  }
+
+  function getStudioLeaders(studio) {
+    const key = POC_STUDIO_NAMES[studio] || String(studio).toUpperCase();
+    if (pocLeaders && pocLeaders[key] && pocLeaders[key].length) return pocLeaders[key];
+    return (STUDIO_CONFIG[studio] && STUDIO_CONFIG[studio].managers) || [];
+  }
+
+  function getAreaBackups() {
+    if (pocLeaders && pocLeaders[POC_AREA_ROW] && pocLeaders[POC_AREA_ROW].length) return pocLeaders[POC_AREA_ROW];
+    return [{ name: 'Inger', email: 'inger@solidcore.co' }];
+  }
+
+  function notifyRow(person, locked, checked) {
+    const tick = '<div class="notify-box"><svg width="10" height="8" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+    return locked
+      ? `<div class="notify-item locked"><input type="checkbox" name="notify_issue" value="${person.email}" checked disabled/>${tick}<span class="notify-name">${person.name}</span><span class="notify-email">${person.email}</span></div>`
+      : `<div class="notify-item${checked ? ' checked' : ''}" onclick="toggleNotify(this)"><input type="checkbox" name="notify_issue" value="${person.email}"${checked ? ' checked' : ''}/>${tick}<span class="notify-name">${person.name}</span><span class="notify-email">${person.email}</span></div>`;
+  }
+
+  function renderNotify(studio) {
+    const notifyList = document.getElementById('notifyList');
+    // Keep any optional boxes already ticked if the list refreshes
+    const keep = new Set([...notifyList.querySelectorAll('input[name="notify_issue"]:checked:not(:disabled)')].map(c => c.value));
+    const leaders = getStudioLeaders(studio);
+    const leaderEmails = new Set(leaders.map(m => String(m.email).toLowerCase()));
+    let html = '';
+    if (leaders.length === 0) {
+      html = '<p style="font-size:13px;color:#5f6368;font-style:italic;">No leader assigned yet. Check POC sheet below.</p>';
+    } else {
+      leaders.forEach(m => { html += notifyRow(m, true); });
+    }
+    // Optional OOO backups: AM from the POC sheet's BK/CT row
+    const backups = getAreaBackups().filter(b => !leaderEmails.has(String(b.email).toLowerCase()));
+    // Anastasiia: Williamsburg only (Nov 2026)
+    if (studio === 'Williamsburg') backups.push({ name: 'Anastasiia', email: 'anastasiia.lazarieva@solidcore.co' });
+    backups.forEach(b => { html += notifyRow(b, false, keep.has(b.email)); });
+    notifyList.innerHTML = html;
+    const notifyHint = document.getElementById('notifyHint');
+    if (notifyHint) notifyHint.textContent = backups.length
+      ? 'Only select ' + backups.map(b => b.name).join(' or ') + ' if HCCM is OOO'
+      : '';
   }
 
   // ── Previous CC Note fetch ─────────────────────────────────
@@ -1294,7 +1383,7 @@
       const isYes = document.querySelector('input[name="facilities_issues"]:checked')?.value === 'Yes';
       document.getElementById('facilities_issues_detail').style.display = isYes ? 'block' : 'none';
       document.getElementById('facilities_action_taken').style.display = isYes ? 'block' : 'none';
-      document.getElementById('facilities_media').style.display = isYes ? 'block' : 'none';
+      const fm = document.getElementById('facilities_media'); if (fm) fm.style.display = isYes ? 'block' : 'none';
       updateSharedNotify();
     });
   });
@@ -1320,6 +1409,38 @@
 
   // ── Google Apps Script endpoint ───────────────────────────
   const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcfU8o7SAPtKct9DGTLx4PAZx-FFzR80aSl3q8OFcNrIxqbhNi77J7E7zzjhPxdu8R/exec';
+  loadPocLeaders();
+
+  // ── Unpaid outreach priority window (2026 payroll calendar) ──
+  // Shows crew which pay period's unpaids to prioritize, based on today's date.
+  // When the calendar runs out, a note asks for it to be updated.
+  const PAYROLL_PERIODS = [
+    ['2025-12-16','2025-12-31'], ['2026-01-01','2026-01-15'], ['2026-01-16','2026-01-31'],
+    ['2026-02-01','2026-02-15'], ['2026-02-16','2026-02-28'], ['2026-03-01','2026-03-15'],
+    ['2026-03-16','2026-03-31'], ['2026-04-01','2026-04-15'], ['2026-04-16','2026-04-30'],
+    ['2026-05-01','2026-05-15'], ['2026-05-16','2026-05-31'], ['2026-06-01','2026-06-15'],
+    ['2026-06-16','2026-06-30'], ['2026-07-01','2026-07-15'], ['2026-07-16','2026-07-31'],
+    ['2026-08-01','2026-08-15'], ['2026-08-16','2026-08-31'], ['2026-09-01','2026-09-15'],
+    ['2026-09-16','2026-09-30'], ['2026-10-01','2026-10-15'], ['2026-10-16','2026-10-31'],
+    ['2026-11-01','2026-11-15'], ['2026-11-16','2026-11-30'], ['2026-12-01','2026-12-15']
+  ];
+  function updateUnpaidWindow() {
+    const el = document.getElementById('unpaidWindow');
+    if (!el) return;
+    const d = new Date();
+    const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    const md = s => Number(s.slice(5, 7)) + '/' + Number(s.slice(8, 10));
+    const period = PAYROLL_PERIODS.find(p => today >= p[0] && today <= p[1]);
+    if (period) {
+      el.textContent = 'Priority: unpaids from ' + md(period[0]) + ' to ' + md(period[1]) + ' (current pay period)';
+      el.style.color = '';
+    } else {
+      el.textContent = '⚠️ Payroll calendar needs to be updated. Contact your HCCM.';
+      el.style.color = '#c5221f';
+      el.style.fontWeight = '600';
+    }
+  }
+  updateUnpaidWindow();
 
   // ── Submit — validate then show confirm modal ────────────
   document.getElementById('shiftForm').addEventListener('submit', function(e) {
@@ -1393,12 +1514,13 @@
 
     const data = new FormData(document.getElementById('shiftForm'));
     const checklistLabels = {
-      class_roster_milestone: 'Class Roster & Milestone Board',
-      brand_standards: 'Brand Standards',
-      stop_drop_checkin: 'Stop Drop Check-In',
-      inbox: 'Inbox Cleared',
+      prep_space: 'Prep the Space',
+      class_roster_milestone: 'Roster Review',
+      brand_standards: 'Reset & Restock',
+      stop_drop_checkin: 'Greet & Hand Off',
+      inbox: 'Zendesk Tickets',
       axle: 'AXLE',
-      unpaid_class: 'Unpaid Class Tomorrow',
+      unpaid_class: 'Unpaid Outreach',
       nab_outreach: 'NAB Outreach',
       supply_order: 'Supply Order'
     };
@@ -1406,7 +1528,7 @@
       .map(c => checklistLabels[c.value] || c.value).join(' | ');
     data.set('checklist', checked);
 
-    const notifyEmails = [...document.querySelectorAll('input[name="notify_issue"]')].map(c => c.value).filter(Boolean);
+    const notifyEmails = [...document.querySelectorAll('input[name="notify_issue"]:checked')].map(c => c.value).filter(Boolean);
     data.set('notify_client_emails', notifyEmails.join(','));
     data.set('notify_facilities_emails', notifyEmails.join(','));
 
