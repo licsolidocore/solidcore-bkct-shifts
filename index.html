@@ -25,6 +25,14 @@
   ║  • Photos / Videos of Facilities Issue section removed       ║
   ║  • Report labels renamed to match Core Crew 5 (Code.gs       ║
   ║    compliance report accepts old + new labels)               ║
+  ║  • Checklist sections collapse into dropdowns with           ║
+  ║    "x of y done" counters                                    ║
+  ║  • Unpaid + NAB outreach merged into one item                ║
+  ║  • Supply order only shows days 1-7 of the month             ║
+  ║  • Shorter form: goal Yes/Partly/No, one issues question,    ║
+  ║    one Shift Wrap-Up section, coach notes only if rating     ║
+  ║    7 or under, name/email/studio remembered per device       ║
+  ║  • LCEs box removed                                          ║
   ╠══════════════════════════════════════════════════════════════╣
   ║  Sep 05, 2026                                                ║
   ║  • Added "Check class roster & complete milestone board"    ║
@@ -394,6 +402,22 @@
   .cc5-opt { display:block; font-size:11px; font-weight:400; color:#80868b; margin-top:2px; }
   @media (max-width:520px){ .cc5-head{flex-wrap:wrap} .cc5-chip{margin-left:36px} }
 
+
+  /* CORE CREW 5 DROPDOWNS */
+  .cc5-head { cursor:pointer; user-select:none; margin-bottom:0; }
+  .cc5-group.open .cc5-head { margin-bottom:12px; }
+  .cc5-group { padding-bottom:14px; }
+  .cc5-group.open { padding-bottom:6px; }
+  .cc5-body { display:none; }
+  .cc5-group.open .cc5-body { display:block; }
+  .cc5-meta { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
+  .cc5-count { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:11px; letter-spacing:0.06em; color:#5f6368; display:flex; align-items:center; gap:4px; }
+  .cc5-count .chev { display:inline-block; transition:transform .15s; font-size:12px; }
+  .cc5-group.open .cc5-count .chev { transform:rotate(180deg); }
+  .cc5-group.done { border-color:#1557b0; }
+  .cc5-group.done .cc5-num { background:#137333; }
+  .cc5-group.done .cc5-count { color:#137333; }
+
   /* RADIO PILLS */
   .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
   .radio-pill { cursor: pointer; }
@@ -750,6 +774,7 @@
     <div class="field">
       <label>Name <span class="req">*</span></label>
       <input type="text" name="name" placeholder="Your name" required />
+      <a href="#" id="notYouLink" onclick="clearCrewProfile(event)" style="display:none;font-size:12px;color:#1557b0;margin-top:6px;">Not you? Clear</a>
     </div>
     <div class="field">
       <label>Email <span class="req">*</span></label>
@@ -778,6 +803,19 @@
     <label>Goal for this shift <span class="req">*</span></label>
     <textarea name="next_shift_goal" id="shiftGoalTextarea" placeholder="Be specific — what will you focus on?" required></textarea>
     <p class="hint" id="goalHint" style="margin-top:8px;"></p>
+  </div>
+  <div class="field">
+    <label>Did you achieve it? <span class="req">*</span></label>
+    <div class="radio-group">
+      <label class="radio-pill"><input type="radio" name="goal_pick" value="Yes" required/><span>Yes</span></label>
+      <label class="radio-pill"><input type="radio" name="goal_pick" value="Partly"/><span>Partly</span></label>
+      <label class="radio-pill"><input type="radio" name="goal_pick" value="No"/><span>No</span></label>
+    </div>
+    <input type="hidden" name="goal_achieved" id="goal_achieved" value=""/>
+  </div>
+  <div class="field" id="goalNoteField" style="display:none;">
+    <label>What got in the way?</label>
+    <textarea name="goal_note" id="goalNote" placeholder="Optional, a sentence is plenty"></textarea>
   </div>
 
   <div class="section-label">Shift Checklist — Required Before End of Shift</div>
@@ -846,7 +884,7 @@
       <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <span class="check-text">Reset / restock studio, checklist on iPad wallpaper</span>
     </div>
-    <div class="check-item" onclick="toggleCheck(this)">
+    <div class="check-item" id="supplyOrderItem" onclick="toggleCheck(this)">
       <input type="checkbox" name="checklist" value="supply_order"/>
       <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <span class="check-text">Studio supply order unpacked &amp; put away <span class="cc5-opt">Arrives first week of the month</span></span>
@@ -875,23 +913,19 @@
       </div>
       <a href="https://portal.axl3.io/login.php" target="_blank" onclick="interceptLink(event)" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">AXLE Portal</a>
     </div>
+    <!-- Unpaid + NAB outreach (merged Nov 2026) -->
     <div style="display:flex;align-items:center;gap:8px;">
       <div class="check-item" onclick="toggleCheck(this)" style="flex:1;margin-bottom:0;">
         <input type="checkbox" name="checklist" value="unpaid_class"/>
         <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="check-text">Unpaid class outreach
+        <span class="check-text">Unpaid class &amp; negative balance outreach
           <span class="cc5-opt" id="unpaidWindow"></span>
         </span>
       </div>
-      <a id="unpaidTrackerLink" onclick="interceptTracker(event)" href="https://drive.google.com/drive/folders/1THgn7AQZvH14rVbHlxOqjnmx72FD6cPD" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📋 Unpaid Tracker</a>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div class="check-item" onclick="toggleCheck(this)" style="flex:1;margin-bottom:0;">
-        <input type="checkbox" name="checklist" value="nab_outreach"/>
-        <div class="check-box"><svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="check-text">Negative account balance outreach</span>
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+        <a id="unpaidTrackerLink" onclick="interceptTracker(event)" href="https://drive.google.com/drive/folders/1THgn7AQZvH14rVbHlxOqjnmx72FD6cPD" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📋 Unpaid Tracker</a>
+        <a id="nabTrackerLink" onclick="interceptTracker(event)" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📊 NAB Tracker</a>
       </div>
-      <a id="nabTrackerLink" onclick="interceptTracker(event)" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:#1557b0;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">📊 NAB Tracker</a>
     </div>
     </div>
   </div>
@@ -937,10 +971,6 @@
     <label>Sales Notes</label>
     <textarea name="sales_notes" placeholder="Any context around your sales this shift — conversations started, objections, follow up opportunities..."></textarea>
   </div>
-  <div class="field">
-    <label>Late Cancel Exceptions (LCEs)</label>
-    <textarea name="bookings_lces" placeholder="Document any LCEs given this shift. Include the client name, reason, and make sure to update the client account in MBO to keep track."></textarea>
-  </div>
 
 
 
@@ -954,6 +984,15 @@
   <div class="section-label">Client & Facilities Issues</div>
   <p style="font-size:12px;color:#5f6368;margin:-8px 0 16px;font-style:italic;">Anything that requires HCCM follow-up should go in this section.</p>
   <div class="field">
+    <label>Any issues this shift? <span class="req">*</span></label>
+    <div class="radio-group">
+      <label class="radio-pill"><input type="radio" name="issues_pick" value="None" required/><span>None</span></label>
+      <label class="radio-pill"><input type="radio" name="issues_pick" value="Client"/><span>Client</span></label>
+      <label class="radio-pill"><input type="radio" name="issues_pick" value="Facilities"/><span>Facilities</span></label>
+      <label class="radio-pill"><input type="radio" name="issues_pick" value="Both"/><span>Both</span></label>
+    </div>
+  </div>
+  <div class="field" style="display:none;">
     <label>Any client issues? <span class="req">*</span></label>
     <div class="radio-group">
       <label class="radio-pill"><input type="radio" name="client_issues" value="Yes" required/><span>Yes</span></label>
@@ -969,7 +1008,7 @@
     <textarea name="client_action_taken" placeholder="What did you do? e.g. Called client, issued refund, notified manager, sent follow up email..."></textarea>
   </div>
 
-  <div class="field">
+  <div class="field" style="display:none;">
     <label>Any facilities issues? <span class="req">*</span></label>
     <div class="radio-group">
       <label class="radio-pill"><input type="radio" name="facilities_issues" value="Yes" required/><span>Yes</span></label>
@@ -1005,14 +1044,8 @@
     </div>
   </div>
 
-  <div class="section-label">Shift Goals — Did You Achieve It?</div>
-  <div class="field">
-    <label>Did you achieve your goal for this shift? <span class="req">*</span></label>
-    <textarea name="goal_achieved" placeholder="Yes — or explain what happened..." required></textarea>
-  </div>
 
-
-  <div class="section-label">Coach Support</div>
+  <div class="section-label">Shift Wrap-Up</div>
   <div class="field">
     <label>How supported did you feel by coaches pre &amp; post class? <span class="req">*</span></label>
     <div style="background:#ffffff;border:1.5px solid #dadce0;border-radius:8px;padding:24px 20px;">
@@ -1041,12 +1074,11 @@
     <input type="hidden" name="coach_support_rating" id="coach_support_rating" value=""/>
     <p class="hint" id="coachSupportHint" style="margin-top:8px;"></p>
   </div>
-  <div class="field">
-    <label>Coach support notes</label>
-    <textarea name="coach_support_notes" placeholder="What worked well or could have been better? Share anything about your experience with coach support this shift..."></textarea>
+  <div class="field" id="coachNotesField" style="display:none;">
+    <label>What could have been better?</label>
+    <textarea name="coach_support_notes" placeholder="Optional, a sentence is plenty"></textarea>
   </div>
 
-  <div class="section-label">End of Shift Check-in</div>
   <div class="field">
     <label>How's your energy & spirit after this shift? <span class="req">*</span></label>
     <div class="energy-options">
@@ -1059,7 +1091,6 @@
     <input type="hidden" name="energy_level" id="energy_level" value=""/>
   </div>
 
-  <div class="section-label">Anything Else?</div>
   <div class="field">
     <label>Did anything prevent you from completing your shift tasks?</label>
     <textarea name="blockers" placeholder="Optional — explain any blockers or things leadership should know..."></textarea>
@@ -1442,6 +1473,125 @@
   }
   updateUnpaidWindow();
 
+
+
+  // ── Shorter form helpers (Nov 2026) ──────────────────────
+  // Goal: Yes / Partly / No, with an optional note for Partly or No
+  function updateGoalAchieved() {
+    const pick = document.querySelector('input[name="goal_pick"]:checked')?.value || '';
+    const noteField = document.getElementById('goalNoteField');
+    const note = document.getElementById('goalNote');
+    noteField.style.display = (pick === 'Partly' || pick === 'No') ? 'block' : 'none';
+    if (pick === 'Yes') note.value = '';
+    const n = note.value.trim();
+    document.getElementById('goal_achieved').value = pick ? pick + (n ? ': ' + n : '') : '';
+  }
+  document.querySelectorAll('input[name="goal_pick"]').forEach(r => r.addEventListener('change', updateGoalAchieved));
+  document.getElementById('goalNote').addEventListener('input', updateGoalAchieved);
+
+  // Issues: one question fills in the client + facilities answers behind the scenes
+  function setYesNo(name, yes) {
+    const r = document.querySelector('input[name="' + name + '"][value="' + (yes ? 'Yes' : 'No') + '"]');
+    if (r && !r.checked) { r.checked = true; r.dispatchEvent(new Event('change')); }
+  }
+  document.querySelectorAll('input[name="issues_pick"]').forEach(r => r.addEventListener('change', () => {
+    const v = document.querySelector('input[name="issues_pick"]:checked')?.value;
+    setYesNo('client_issues', v === 'Client' || v === 'Both');
+    setYesNo('facilities_issues', v === 'Facilities' || v === 'Both');
+  }));
+
+  // Coach notes only when the rating is 7 or under
+  const _selectCoachSupport = selectCoachSupport;
+  selectCoachSupport = function(val) {
+    _selectCoachSupport(val);
+    const f = document.getElementById('coachNotesField');
+    const show = val <= 7;
+    f.style.display = show ? 'block' : 'none';
+    if (!show) f.querySelector('textarea').value = '';
+  };
+
+  // Remember name, email and studio on this device
+  const PROFILE_KEY = 'solidcore_crew_profile_v1';
+  function loadCrewProfile() {
+    try {
+      const p = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
+      if (!p) return;
+      const nameEl = document.querySelector('input[name="name"]');
+      const emailEl = document.querySelector('input[name="email"]');
+      const studioEl = document.getElementById('studio_select');
+      if (!nameEl.value && p.name) nameEl.value = p.name;
+      if (!emailEl.value && p.email) emailEl.value = p.email;
+      if (!studioEl.value && p.studio) { studioEl.value = p.studio; onStudioChange(p.studio); }
+      document.getElementById('notYouLink').style.display = 'inline-block';
+      updateProgress();
+    } catch (e) {}
+  }
+  function clearCrewProfile(e) {
+    if (e) e.preventDefault();
+    try { localStorage.removeItem(PROFILE_KEY); } catch (err) {}
+    document.querySelector('input[name="name"]').value = '';
+    document.querySelector('input[name="email"]').value = '';
+    document.getElementById('notYouLink').style.display = 'none';
+    document.querySelector('input[name="name"]').focus();
+    updateProgress();
+  }
+  document.getElementById('shiftForm').addEventListener('submit', function() {
+    updateGoalAchieved();
+    try {
+      localStorage.setItem(PROFILE_KEY, JSON.stringify({
+        name: document.querySelector('input[name="name"]').value.trim(),
+        email: document.querySelector('input[name="email"]').value.trim(),
+        studio: document.getElementById('studio_select').value
+      }));
+    } catch (e) {}
+  }, true);
+
+  // ── Supply order: only shows the first week of the month (days 1-7) ──
+  (function supplyOrderWeekOne() {
+    const item = document.getElementById('supplyOrderItem');
+    if (!item) return;
+    if (new Date().getDate() > 7) {
+      item.style.display = 'none';
+      const cb = item.querySelector('input'); if (cb) cb.checked = false;
+      item.classList.remove('checked');
+    }
+  })();
+
+  // ── Core Crew 5 dropdowns: each section collapses, shows "x of y done" ──
+  (function setupCc5Dropdowns() {
+    document.querySelectorAll('.cc5-group').forEach(g => {
+      const head = g.querySelector('.cc5-head');
+      if (!head || g.querySelector('.cc5-body')) return;
+      const body = document.createElement('div');
+      body.className = 'cc5-body';
+      [...g.children].filter(c => c !== head).forEach(c => body.appendChild(c));
+      g.appendChild(body);
+      const chip = head.querySelector('.cc5-chip');
+      const meta = document.createElement('div');
+      meta.className = 'cc5-meta';
+      if (chip) meta.appendChild(chip);
+      const count = document.createElement('span');
+      count.className = 'cc5-count';
+      meta.appendChild(count);
+      head.appendChild(meta);
+      head.addEventListener('click', () => g.classList.toggle('open'));
+    });
+    function recount() {
+      document.querySelectorAll('.cc5-group').forEach(g => {
+        const all = [...g.querySelectorAll('.cc5-body input[name="checklist"]')].filter(b => { const it = b.closest('.check-item'); return !it || it.style.display !== 'none'; });
+        const done = all.filter(b => b.checked).length;
+        const c = g.querySelector('.cc5-count');
+        if (c) c.innerHTML = (done === all.length && all.length ? '✓ ' : '') + done + ' of ' + all.length + ' done <span class="chev">▾</span>';
+        g.classList.toggle('done', all.length > 0 && done === all.length);
+      });
+    }
+    const list = document.getElementById('checklist');
+    if (list) new MutationObserver(recount).observe(list, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    document.addEventListener('change', recount);
+    recount();
+  })();
+
+
   // ── Submit — validate then show confirm modal ────────────
   document.getElementById('shiftForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -1520,7 +1670,7 @@
       stop_drop_checkin: 'Greet & Hand Off',
       inbox: 'Zendesk Tickets',
       axle: 'AXLE',
-      unpaid_class: 'Unpaid Outreach',
+      unpaid_class: 'Unpaid & NAB Outreach',
       nab_outreach: 'NAB Outreach',
       supply_order: 'Supply Order'
     };
@@ -1647,6 +1797,12 @@
 
   loadFormDraft();
   updateTrashCheck();
+  setTimeout(() => {
+    updateGoalAchieved();
+    const cs = parseInt(document.getElementById('coach_support_rating').value);
+    if (cs) selectCoachSupport(cs);
+    loadCrewProfile();
+  }, 0);
 
   document.getElementById('shiftForm').addEventListener('submit', function() {
     formSubmitted = true;
