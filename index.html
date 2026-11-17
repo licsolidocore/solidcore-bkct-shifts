@@ -34,6 +34,13 @@
   ║    7 or under, name/email/studio remembered per device       ║
   ║  • LCEs box removed                                          ║
   ╠══════════════════════════════════════════════════════════════╣
+  ║  Nov 16, 2026                                                ║
+  ║  • Weekly Amenity Count section: shows only Mon Nov 30 and   ║
+  ║    Mon Dec 7, hides once the studio's tracker row is         ║
+  ║    counted, never shows after Dec 7. On hand only (Received  ║
+  ║    is adjusted manually on the tracker). Writes into the     ║
+  ║    network Amenity Usage Tracker via Code.gs                 ║
+  ╠══════════════════════════════════════════════════════════════╣
   ║  Sep 05, 2026                                                ║
   ║  • Added "Check class roster & complete milestone board"    ║
   ║    as first checklist item (all studios) + Class Roster      ║
@@ -417,6 +424,18 @@
   .cc5-group.done { border-color:#1557b0; }
   .cc5-group.done .cc5-num { background:#137333; }
   .cc5-group.done .cc5-count { color:#137333; }
+
+
+  /* WEEKLY AMENITY COUNT */
+  .amen-due { display:inline-block; margin-left:8px; background:#fff4e5; color:#b06000; border-radius:6px; padding:3px 8px; font-size:10px; letter-spacing:0.06em; vertical-align:middle; }
+  .amen-card { background:#ffffff; border:1px solid #dadce0; border-radius:10px; padding:10px 14px 14px; }
+  .amen-row { display:grid; grid-template-columns:minmax(0,1fr) 96px; gap:8px; align-items:center; padding:8px 0; border-bottom:1px solid #f1f3f4; }
+  .amen-head { border-bottom:1px solid #dadce0; padding:4px 0 8px; }
+  .amen-head span { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:#5f6368; text-align:center; }
+  .amen-item { font-size:14px; color:#202124; }
+  .amen-item small { display:block; font-size:11px; color:#80868b; }
+  .amen-in { width:100%; height:40px; text-align:center; font-size:16px; border:1px solid #dadce0; border-radius:6px; padding:0 4px; }
+  .amen-in.missing { border-color:#c5221f; background:#fdecea; }
 
   /* RADIO PILLS */
   .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -945,6 +964,26 @@
     <textarea name="next_cc_notes" placeholder="What didn't get done this shift? What should the next crew prioritize? e.g. NAB outreach not completed, supply order still needs to be put away..." required></textarea>
   </div>
 
+  <!-- WEEKLY AMENITY COUNT · Mondays Nov 30 + Dec 7 only, then gone (Nov 2026) -->
+  <div id="amenitySection" style="display:none;">
+    <div class="section-label">Weekly Amenity Count <span class="amen-due" id="amenDue"></span></div>
+    <p style="font-size:12px;color:#5f6368;margin:-8px 0 14px;line-height:1.5;">Count every <strong>unopened</strong> unit in the studio, including anything that just arrived. An open bottle or bag counts as used. Enter 0 if you have none.</p>
+    <div class="amen-card">
+      <div class="amen-row amen-head"><span></span><span>On hand</span></div>
+        <div class="amen-row"><span class="amen-item">Wipes<small>single bags, not boxes</small></span><input type="number" inputmode="numeric" min="0" step="1" class="amen-in amen-h" data-i="0" aria-label="Wipes on hand"/></div>
+        <div class="amen-row"><span class="amen-item">S&amp;S Hand Wash<small>bottles</small></span><input type="number" inputmode="numeric" min="0" step="1" class="amen-in amen-h" data-i="1" aria-label="S&amp;S Hand Wash on hand"/></div>
+        <div class="amen-row"><span class="amen-item">S&amp;S Hand Wash Refill<small>bags</small></span><input type="number" inputmode="numeric" min="0" step="1" class="amen-in amen-h" data-i="2" aria-label="S&amp;S Hand Wash Refill on hand"/></div>
+        <div class="amen-row"><span class="amen-item">S&amp;S Lotion<small>bottles</small></span><input type="number" inputmode="numeric" min="0" step="1" class="amen-in amen-h" data-i="3" aria-label="S&amp;S Lotion on hand"/></div>
+        <div class="amen-row"><span class="amen-item">S&amp;S Facial Cleanser<small>bottles</small></span><input type="number" inputmode="numeric" min="0" step="1" class="amen-in amen-h" data-i="4" aria-label="S&amp;S Facial Cleanser on hand"/></div>
+        <div class="amen-row"><span class="amen-item">Oribe Dry Shampoo<small>cans</small></span><input type="number" inputmode="numeric" min="0" step="1" class="amen-in amen-h" data-i="5" aria-label="Oribe Dry Shampoo on hand"/></div>
+      <div class="field" style="margin:14px 0 0;">
+        <label>Notes (anything unusual)</label>
+        <input type="text" id="amenNotes" placeholder="Optional, e.g. waiting on refill bags"/>
+      </div>
+    </div>
+    <p class="hint" id="amenHint" style="margin-top:8px;"></p>
+  </div>
+
   <div class="section-label">Sales Metrics</div>
   <div class="metrics-grid">
     <div class="metric-card">
@@ -1442,6 +1481,72 @@
   const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcfU8o7SAPtKct9DGTLx4PAZx-FFzR80aSl3q8OFcNrIxqbhNi77J7E7zzjhPxdu8R/exec';
   loadPocLeaders();
 
+  // ── Weekly amenity count (Mondays Nov 23, Nov 30, Dec 7, 2026 only) ──
+  // Shows on the due Monday (device clock), hides once that studio's row on the
+  // network tracker is Complete. After Dec 7 it never shows again.
+  const AMENITY_DUE_DATES = ['2026-11-23', '2026-11-30', '2026-12-07'];
+  function todayKey() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  // Preview link: add ?preview=amenity to the form URL to see the section any day.
+  // In preview nothing is sent: no shift report row, no tracker entry.
+  const AMENITY_PREVIEW = /[?&]preview=amenity\b/.test(location.search);
+  if (AMENITY_PREVIEW) {
+    const bar = document.createElement('div');
+    bar.style.cssText = 'position:sticky;top:0;z-index:9999;background:#fef7e0;color:#7a4f01;border-bottom:1px solid #f9d77e;padding:10px 16px;font:600 13px/1.4 sans-serif;text-align:center;';
+    bar.textContent = '🧪 Test mode: submits as if it were Mon Nov 30. Only the amenity count is sent, into the TEST COPY of the tracker. No shift report is saved.';
+    document.body.prepend(bar);
+  }
+  function amenityDueToday() {
+    if (AMENITY_PREVIEW) return '2026-11-30';
+    const t = todayKey();
+    return AMENITY_DUE_DATES.indexOf(t) > -1 ? t : '';
+  }
+  function amenityVisible() {
+    return document.getElementById('amenitySection').style.display !== 'none';
+  }
+  function updateAmenitySection(studio) {
+    const sec = document.getElementById('amenitySection');
+    const due = amenityDueToday();
+    if (!due || !studio) { sec.style.display = 'none'; return; }
+    const d = new Date(due + 'T12:00:00');
+    document.getElementById('amenDue').textContent = 'Due today · ' + d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    sec.style.display = 'block';
+    if (AMENITY_PREVIEW) document.getElementById('amenDue').textContent = 'Test · Mon, Nov 30';
+    fetch(GOOGLE_SCRIPT_URL + '?action=amenityStatus&studio=' + encodeURIComponent(studio) + '&due=' + due + (AMENITY_PREVIEW ? '&test=1' : ''))
+      .then(r => r.json())
+      .then(s => {
+        if (document.getElementById('studio_select').value !== studio) return;
+        // Hide if already submitted, or if the tracker has no tab for this week
+        if (s && (s.submitted || s.due === false || s.error)) sec.style.display = 'none';
+      })
+      .catch(() => { /* keep it showing if the check fails */ });
+  }
+  document.getElementById('studio_select').addEventListener('change', e => updateAmenitySection(e.target.value));
+  document.querySelectorAll('.amen-in').forEach(i => i.addEventListener('input', () => i.classList.remove('missing')));
+
+  // Block submit until every amenity number is filled (0 is fine)
+  document.getElementById('shiftForm').addEventListener('submit', function(e) {
+    if (!amenityVisible()) return;
+    const empty = [...document.querySelectorAll('.amen-in')].filter(i => i.value.trim() === '' || Number(i.value) < 0);
+    empty.forEach(i => i.classList.add('missing'));
+    if (empty.length) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const hint = document.getElementById('amenHint');
+      hint.textContent = '⚠️ Fill in every amenity box. Enter 0 if you have none.';
+      hint.style.color = '#c5221f';
+      document.getElementById('amenitySection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, true);
+
+  function amenityPayload() {
+    if (!amenityVisible()) return null;
+    const vals = cls => [...document.querySelectorAll('.' + cls)].sort((a, b) => a.dataset.i - b.dataset.i).map(i => Number(i.value) || 0);
+    return { due: amenityDueToday(), on_hand: vals('amen-h'), notes: document.getElementById('amenNotes').value.trim() };
+  }
+
   // ── Unpaid outreach priority window (2026 payroll calendar) ──
   // Shows crew which pay period's unpaids to prioritize, based on today's date.
   // When the calendar runs out, a note asks for it to be updated.
@@ -1688,6 +1793,8 @@
     payload.energy_level = document.getElementById('energy_level').value || '';
     payload.studio = studio;
     payload.shift_time = document.getElementById('shift_time_combined').value || '';
+    const amen = amenityPayload();
+    if (amen) payload.amenity_count = amen;
 
     const axleItems = [...document.querySelectorAll('input[name^="axle_"]:checked')].map(c => c.value);
     const axleLabels = { voicemails_cleared: 'Voicemails Cleared', clients_called_back: 'Clients Called Back', non_sales_texts: 'Non-Sales Texts Addressed', first_class_bucket: 'First Class Bucket Cleared' };
@@ -1705,6 +1812,14 @@
       }
     }
 
+    // Preview link: show the success screen but send nothing
+    if (typeof AMENITY_PREVIEW !== 'undefined' && AMENITY_PREVIEW) {
+      // Test mode: send only the amenity count, flagged so the backend writes to the TEST copy
+      if (payload.amenity_count) {
+        fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amenity_test: true, studio: studio, name: payload.name, amenity_count: payload.amenity_count }) }).catch(() => {});
+      }
+    } else
     // Fire and forget — no-cors means we can't read the response
     fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
@@ -1802,6 +1917,7 @@
     const cs = parseInt(document.getElementById('coach_support_rating').value);
     if (cs) selectCoachSupport(cs);
     loadCrewProfile();
+    updateAmenitySection(document.getElementById('studio_select').value);
   }, 0);
 
   document.getElementById('shiftForm').addEventListener('submit', function() {
