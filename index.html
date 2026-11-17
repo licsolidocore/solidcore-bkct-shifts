@@ -436,6 +436,11 @@
   .amen-item small { display:block; font-size:11px; color:#80868b; }
   .amen-in { width:100%; height:40px; text-align:center; font-size:16px; border:1px solid #dadce0; border-radius:6px; padding:0 4px; }
   .amen-in.missing { border-color:#c5221f; background:#fdecea; }
+  .amen-skip { display:flex; align-items:center; gap:10px; margin:0 0 12px; padding:10px 12px; background:#f8f9fa; border:1px solid #dadce0; border-radius:8px; font-size:13px; color:#3c4043; cursor:pointer; text-transform:none; letter-spacing:normal; font-family:inherit; font-weight:400; line-height:1.4; }
+  .amen-skip strong { font-weight:700; }
+  .amen-skip input { width:18px; height:18px; margin:0; flex:none; }
+  .amen-card.skipped { opacity:0.45; pointer-events:none; }
+  .amen-required { display:none; margin:0 0 12px; padding:10px 12px; background:#fff4e5; border:1px solid #f9d77e; border-radius:8px; font-size:13px; color:#7a4f01; }
 
   /* RADIO PILLS */
   .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -968,7 +973,9 @@
   <div id="amenitySection" style="display:none;">
     <div class="section-label">Weekly Amenity Count <span class="amen-due" id="amenDue"></span></div>
     <p style="font-size:12px;color:#5f6368;margin:-8px 0 14px;line-height:1.5;">Count every <strong>unopened</strong> unit in the studio, including anything that just arrived. An open bottle or bag counts as used. Enter 0 if you have none.</p>
-    <div class="amen-card">
+    <label class="amen-skip" id="amenSkipWrap"><input type="checkbox" id="amenSkip"/> <span><strong>Skip, leave it for the next shift.</strong> Not sure where everything is? The next Core Crew can count. Closing shift must complete it.</span></label>
+    <div class="amen-required" id="amenRequired">🔒 <strong>Closing shift:</strong> the count hasn't been done yet today, so it needs to be completed before you submit.</div>
+    <div class="amen-card" id="amenCard">
       <div class="amen-row amen-head"><span></span><span>On hand</span></div>
         <div class="amen-row"><span class="amen-item">Wipes<small>single bags, not boxes</small></span><input type="number" inputmode="numeric" min="0" step="1" class="amen-in amen-h" data-i="0" aria-label="Wipes on hand"/></div>
         <div class="amen-row"><span class="amen-item">S&amp;S Hand Wash<small>bottles</small></span><input type="number" inputmode="numeric" min="0" step="1" class="amen-in amen-h" data-i="1" aria-label="S&amp;S Hand Wash on hand"/></div>
@@ -1529,23 +1536,46 @@
   document.querySelector('input[name="date"]').addEventListener('change', () => updateAmenitySection(document.getElementById('studio_select').value));
   document.querySelectorAll('.amen-in').forEach(i => i.addEventListener('input', () => i.classList.remove('missing')));
 
+  // Opening/Mid can skip; Closing (PM) must count if nobody has yet
+  function isClosingShift() {
+    return /closing/i.test(document.getElementById('shift_time_combined').value || '');
+  }
+  function amenitySkipped() {
+    return !isClosingShift() && document.getElementById('amenSkip').checked;
+  }
+  function updateAmenitySkip() {
+    const closing = isClosingShift();
+    const skip = document.getElementById('amenSkip');
+    if (closing) skip.checked = false;
+    document.getElementById('amenSkipWrap').style.display = closing ? 'none' : 'flex';
+    document.getElementById('amenRequired').style.display = closing ? 'block' : 'none';
+    document.getElementById('amenCard').classList.toggle('skipped', skip.checked);
+    if (skip.checked) {
+      document.querySelectorAll('.amen-in').forEach(i => i.classList.remove('missing'));
+      document.getElementById('amenHint').textContent = '';
+    }
+  }
+  document.getElementById('amenSkip').addEventListener('change', updateAmenitySkip);
+  document.querySelectorAll('.shift-pill').forEach(p => p.addEventListener('click', () => setTimeout(updateAmenitySkip, 0)));
+  updateAmenitySkip();
+
   // Block submit until every amenity number is filled (0 is fine)
   document.getElementById('shiftForm').addEventListener('submit', function(e) {
-    if (!amenityVisible()) return;
+    if (!amenityVisible() || amenitySkipped()) return;
     const empty = [...document.querySelectorAll('.amen-in')].filter(i => i.value.trim() === '' || Number(i.value) < 0);
     empty.forEach(i => i.classList.add('missing'));
     if (empty.length) {
       e.preventDefault();
       e.stopImmediatePropagation();
       const hint = document.getElementById('amenHint');
-      hint.textContent = '⚠️ Fill in every amenity box. Enter 0 if you have none.';
+      hint.textContent = isClosingShift() ? '⚠️ Closing shift: fill in every amenity box. Enter 0 if you have none.' : '⚠️ Fill in every amenity box (0 if you have none), or check Skip above.';
       hint.style.color = '#c5221f';
       document.getElementById('amenitySection').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, true);
 
   function amenityPayload() {
-    if (!amenityVisible()) return null;
+    if (!amenityVisible() || amenitySkipped()) return null;
     const vals = cls => [...document.querySelectorAll('.' + cls)].sort((a, b) => a.dataset.i - b.dataset.i).map(i => Number(i.value) || 0);
     return { due: amenityDueToday(), on_hand: vals('amen-h'), notes: document.getElementById('amenNotes').value.trim() };
   }
